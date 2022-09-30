@@ -21,7 +21,7 @@ def compile_source(source, tmp_dir):
         return e.output
 
 
-def run(executable, source, testcase):
+def run(executable, source, testcase, expected):
     __dir__ = os.path.dirname(__file__)
     tmp_dir = tempfile.mkdtemp()
     os.chmod(tmp_dir, 0o775)
@@ -48,10 +48,14 @@ def run(executable, source, testcase):
     if code != 0:
         return False
 
-    return verdict != 'Runtime Error'
+    if verdict == expected:
+        return True
+    else:
+        print('Expected verdict: "' + expected + '", but find "' + verdict + '"')
+        return False
 
 
 if __name__ == '__main__':
-    ok = run(sys.argv[1], sys.argv[2], sys.argv[3])
+    ok = run(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
     if not ok:
         exit(1)
