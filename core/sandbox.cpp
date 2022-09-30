@@ -329,7 +329,7 @@ static Result *run(Context *ctx) {
 
       if (result->verdict == Verdict::SE && result->memory > ctx->memory_limit) {
         result->verdict = Verdict::MLE;
-        FM_LOG_TRACE("Well, Memory Limit Exceeded.");
+        FM_LOG_TRACE("Memory Limit Exceeded (%d KB)", result->memory);
         ptrace(PTRACE_KILL, executive, NULL, NULL);
         break;
       }
