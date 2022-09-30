@@ -18,7 +18,6 @@ def compile_source(source, tmp_dir):
     try:
         subprocess.check_output(commands, stderr=subprocess.STDOUT)
         os.chmod(output, 0o775)
-        os.chown(output, pwd.getpwnam("nobody").pw_uid, grp.getgrnam("nogroup").gr_gid)
         return None
     except subprocess.CalledProcessError as e:
         return e.output
@@ -27,6 +26,7 @@ def compile_source(source, tmp_dir):
 def run(executable, source, testcase):
     __dir__ = os.path.dirname(__file__)
     tmp_dir = tempfile.mkdtemp()
+    os.chmod(tmp_dir, 0o775)
     source_path = os.path.join(tmp_dir, source)
     shutil.copy(os.path.join(__dir__, "source", source), source_path)
     err_output = compile_source(source_path, tmp_dir)
