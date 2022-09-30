@@ -3,8 +3,6 @@
 # -*- coding: utf-8 -*-
 
 import os
-import pwd
-import grp
 import sys
 import shutil
 import subprocess
@@ -40,13 +38,17 @@ def run(executable, source, testcase):
     commands = [executable, "-d", tmp_dir, "-l", "2", "-s", "lcmp"]
     code = subprocess.call(commands, cwd=os.path.dirname(executable))
 
-    print(os.listdir(tmp_dir))
-    # shutil.rmtree(tmp_dir)
+    def read_verdict():
+        with open(os.path.join(tmp_dir, 'result.txt')) as result:
+            return result.read().split('\n')[0].strip()
+
+    verdict = read_verdict()
+    shutil.rmtree(tmp_dir)
 
     if code != 0:
         return False
 
-    return True
+    return verdict != 'Runtime Error'
 
 
 if __name__ == '__main__':
