@@ -11,6 +11,7 @@
 #include <sys/resource.h>
 
 #include "conf.h"
+#include "context.h"
 #include "sandbox.h"
 #include "rf_table.h"
 
