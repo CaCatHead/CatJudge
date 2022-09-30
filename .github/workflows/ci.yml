@@ -20,3 +20,8 @@ jobs:
         run: |
           cmake -B ./build -G "Unix Makefiles"
           cmake --build ./build --config Debug --target all -j 18
+
+      - name: Test
+        run: |
+          cd ./build
+          sudo ctest

@@ -1,5 +1,13 @@
 # CMake
 build/
+cmake-build-debug/
+cmake-build-debug-wsl/
+
+# IDE
+.idea/
+
+# Logs
+core_log.txt
 
 # Prerequisites
 *.d

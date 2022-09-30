@@ -33,17 +33,19 @@ bool has_suffix(const std::string &str, const std::string &suffix) {
  */
 static
 void output_result() {
+    if (PROBLEM::result_file.empty()) return;
+
     FILE* result_file = fopen(PROBLEM::result_file.c_str(), "w");
     switch (PROBLEM::result){
-        case 1:PROBLEM::status = "Compile Error";break;
-        case 2:PROBLEM::status = "Time Limit Exceeded";break;
-        case 3:PROBLEM::status = "Memory Limit Exceeded";break;
-        case 4:PROBLEM::status = "Output Limit Exceeded";break;
-        case 5:PROBLEM::status = "Runtime Error";break;
-        case 6:PROBLEM::status = "Wrong Answer";break;
-        case 7:PROBLEM::status = "Accepted";break;
-        case 8:PROBLEM::status = "Presentation Error";break;
-        default:PROBLEM::status = "System Error";break;
+        case 1:PROBLEM::status = "Compile Error";         break;
+        case 2:PROBLEM::status = "Time Limit Exceeded";   break;
+        case 3:PROBLEM::status = "Memory Limit Exceeded"; break;
+        case 4:PROBLEM::status = "Output Limit Exceeded"; break;
+        case 5:PROBLEM::status = "Runtime Error";         break;
+        case 6:PROBLEM::status = "Wrong Answer";          break;
+        case 7:PROBLEM::status = "Accepted";              break;
+        case 8:PROBLEM::status = "Presentation Error";    break;
+        default:PROBLEM::status = "System Error";         break;
     }
     fprintf(result_file, "%s\n", PROBLEM::status.c_str());
     fprintf(result_file, "%d\n", PROBLEM::time_usage);
@@ -55,16 +57,28 @@ void output_result() {
             PROBLEM::memory_usage, PROBLEM::extra_message.c_str());
 }
 
+static void print_help_message() {
+    puts("catjudge/0.0.0");
+    puts("");
+    puts("Options:");
+    puts("  -c <path>");
+    puts("  -t <time>");
+    puts("  -m <memory>");
+    puts("  -d <dir>");
+    exit(JUDGE_CONF::EXIT_HELP);
+}
+
 /*
  * 解析参数
  */
 static
 void parse_arguments(int argc, char* argv[]) {
-    int opt;
+    char opt;
     extern char *optarg;
 
-    while ((opt = getopt(argc, argv, "l:t:m:d:S:s")) != -1) {
+    while ((opt = getopt(argc, argv, "l:t:m:d:S:sh")) != -1) {
         switch (opt) {
+            case 'h': print_help_message();                   break;
             case 'l': PROBLEM::lang         = atoi(optarg);   break;
             //case 'c': PROBLEM::code_path    = optarg;         break;
             case 't': PROBLEM::time_limit   = atoi(optarg);   break;
