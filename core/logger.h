@@ -55,11 +55,17 @@ const int LOG_NOTICE = 3;
 const int LOG_TRACE = 4;
 const int LOG_DEBUG = 5;
 static char LOG_LEVEL_NOTE[][10] =
-    {"FATAL", "WARNING", "MONITOR", "NOTICE", "TRACE", "DEBUG"};
+    {"FATAL  ",
+     "WARNING",
+     "MONITOR",
+     "NOTICE ",
+     "TRACE  ",
+     "DEBUG  "};
+
 #define FM_LOG_DEBUG(x...)   log_write(LOG_DEBUG, __FILE__, __LINE__, ##x)
 #define FM_LOG_TRACE(x...)   log_write(LOG_TRACE, __FILE__, __LINE__, ##x)
 #define FM_LOG_NOTICE(x...)  log_write(LOG_NOTICE, __FILE__, __LINE__, ##x)
-#define FM_LOG_MONITOR(x...)  log_write(LOG_MONITOR, __FILE__ __LINE__, ##x)
+#define FM_LOG_MONITOR(x...) log_write(LOG_MONITOR, __FILE__ __LINE__, ##x)
 #define FM_LOG_WARNING(x...) log_write(LOG_WARNING, __FILE__, __LINE__, ##x)
 #define FM_LOG_FATAL(x...)   log_write(LOG_FATAL, __FILE__, __LINE__, ##x)
 
@@ -81,7 +87,7 @@ int log_open(const char *filename) {
   strcpy(log_filename, filename);
   log_fp = fopen(log_filename, "a");
   if (log_fp == NULL) {
-    fprintf(stderr, "log_file: %s", log_filename);
+    fprintf(stderr, "log_file: %s\n", log_filename);
     perror("can't not open log file");
     exit(1);
   }
@@ -124,7 +130,7 @@ static void log_write(int level, const char *file,
   va_end(ap);
 
   size_t count = snprintf(buffer, log_buffer_size,
-                          "%s [%s] [%s:%d]%s %s\n",
+                          "%s [%s] [%s:%3d]%s %s\n",
                           LOG_LEVEL_NOTE[level], datetime, file, line, log_extra_info, log_buffer);
   int log_fd = log_fp->_fileno;
   //puts(buffer);

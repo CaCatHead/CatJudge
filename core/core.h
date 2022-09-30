@@ -65,6 +65,12 @@ namespace JUDGE_CONF {
   const int LANG_CPP = 2;
   const int LANG_JAVA = 3;
 
+  enum Language {
+    UNKNOWN = 0,
+    C = 1,
+    CPP = 2,
+    JAVA = 3
+  };
 }
 
 namespace PROBLEM {
