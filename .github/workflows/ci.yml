@@ -1,0 +1,22 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Get latest CMake and ninja
+        uses: lukka/get-cmake@latest
+
+      - name: Build
+        run: |
+          cmake -B ./build -G "Unix Makefiles"
+          cmake --build ./build --config Debug --target all -j 18
