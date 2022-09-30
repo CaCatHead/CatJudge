@@ -323,8 +323,9 @@ static Result *run(Context *ctx) {
       }
 
       // MLE
-      result->memory = std::max((long int) result->memory,
-                                rused.ru_minflt * (getpagesize() / CONF::KILO));
+      // ru_maxrss (since Linux 2.6.32)
+      result->memory = std::max((long int) result-> memory, rused.ru_maxrss);
+      // result->memory = std::max((long int) result->memory, rused.ru_minflt * (getpagesize() / CONF::KILO));
 
       if (result->verdict == Verdict::SE && result->memory > ctx->memory_limit) {
         result->verdict = Verdict::MLE;
