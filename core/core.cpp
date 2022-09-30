@@ -58,7 +58,7 @@ void output_result() {
 }
 
 static void print_help_message() {
-    puts("catjudge/0.0.0");
+    printf("catjudge/%s\n", CATJUDGE_VERSION);
     puts("");
     puts("Options:");
     puts("  -c <path>");
