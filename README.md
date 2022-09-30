@@ -6,7 +6,7 @@ This is migrated from [NJUST-FishTeam/OnlineJudgeCore](https://github.com/NJUST-
 
 > **Prerequisite**
 >
-> Install latest [cmake](https://cmake.org/), C/C++ compiler ([gcc](https://gcc.gnu.org/) or [clang](https://clang.llvm.org/)), and [python](https://www.python.org/).
+> Install latest [cmake](https://cmake.org/), C/C++ compiler ([gcc](https://gcc.gnu.org/) or [clang](https://clang.llvm.org/)), and [python 2/3](https://www.python.org/).
 
 ```bash
 # Configure project
@@ -26,4 +26,4 @@ Refer to [core](./core/README.md).
 
 ## License
 
-MIT License © 2021 [XLor](https://github.com/yjl9903)
+MIT License © 2022 [XLor](https://github.com/yjl9903)
