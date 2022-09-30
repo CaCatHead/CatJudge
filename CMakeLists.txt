@@ -19,3 +19,7 @@ add_test(NAME Help
          COMMAND $<TARGET_FILE:main> "-h")
 add_test(NAME APLUSB
          COMMAND python ../core/test/run.py $<TARGET_FILE:main> ac.cpp 1)
+add_test(NAME APLUSB_TLE
+         COMMAND python ../core/test/run.py $<TARGET_FILE:main> tle.cpp 1)
+add_test(NAME APLUSB_MLE
+         COMMAND python ../core/test/run.py $<TARGET_FILE:main> mle.cpp 1)
