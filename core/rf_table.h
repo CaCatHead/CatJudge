@@ -6,6 +6,7 @@
 
 #include "core.h"
 #include "logger.h"
+
 /*
  * RF_table 每个值对应的是该syscall可被调用的次数
  *    取值有3种:
@@ -48,7 +49,7 @@ int RF_C[512] =
     SYS_uname,          -1,
     SYS_write,          -1,
     SYS_writev,         -1,
-	201,				-1,
+  201,				-1,
     -1
 };
 
@@ -72,7 +73,7 @@ int RF_CPP[512] =
     SYS_uname,          -1,
     SYS_write,          -1,
     SYS_writev,         -1,
-	201,				-1,
+  201,				-1,
     -1
 };
 
@@ -142,147 +143,144 @@ int RF_JAVA[512] =
 
 #elif defined __x86_64__
 int RF_C[512] =
-{
-    SYS_access,         -1,
-    SYS_arch_prctl,     -1,
-    SYS_brk,            -1,
-    SYS_close,          -1,
-    SYS_execve,          1,
-    SYS_exit_group,     -1,
-    SYS_fstat,          -1,
-    SYS_futex,          -1,
-    SYS_gettimeofday,   -1,
-    SYS_mmap,           -1,
-    SYS_mremap,         -1,
-    SYS_mprotect,       -1,
-    SYS_munmap,         -1,
-    SYS_lseek,          -1,
-    SYS_read,           -1,
-    SYS_set_thread_area,-1,
-    SYS_uname,          -1,
-    SYS_write,          -1,
-    SYS_writev,         -1,
-    SYS_time,           -1,
-    SYS_readlink,       -1,
-    -1
-};
+    {
+        SYS_access, -1,
+        SYS_arch_prctl, -1,
+        SYS_brk, -1,
+        SYS_close, -1,
+        SYS_execve, 1,
+        SYS_exit_group, -1,
+        SYS_fstat, -1,
+        SYS_futex, -1,
+        SYS_gettimeofday, -1,
+        SYS_mmap, -1,
+        SYS_mremap, -1,
+        SYS_mprotect, -1,
+        SYS_munmap, -1,
+        SYS_lseek, -1,
+        SYS_read, -1,
+        SYS_set_thread_area, -1,
+        SYS_uname, -1,
+        SYS_write, -1,
+        SYS_writev, -1,
+        SYS_time, -1,
+        SYS_readlink, -1,
+        -1
+    };
 
 int RF_CPP[512] =
-{
-    SYS_access,         -1,
-    SYS_arch_prctl,     -1,
-    SYS_brk,            -1,
-    SYS_close,          -1,
-    SYS_execve,          1,
-    SYS_exit_group,     -1,
-    SYS_fstat,          -1,
-    SYS_futex,          -1,
-    SYS_gettimeofday,   -1,
-    SYS_mmap,           -1,
-    SYS_mremap,         -1,
-    SYS_mprotect,       -1,
-    SYS_munmap,         -1,
-    SYS_lseek,          -1,
-    SYS_read,           -1,
-    SYS_set_thread_area,-1,
-    SYS_uname,          -1,
-    SYS_write,          -1,
-    SYS_writev,         -1,
-    SYS_time,           -1,
-    SYS_readlink,       -1, //原本ubuntu 12.04不需要这一条
-    -1
-};
+    {
+        SYS_access, -1,
+        SYS_arch_prctl, -1,
+        SYS_brk, -1,
+        SYS_close, -1,
+        SYS_execve, 1,
+        SYS_exit_group, -1,
+        SYS_fstat, -1,
+        SYS_futex, -1,
+        SYS_gettimeofday, -1,
+        SYS_mmap, -1,
+        SYS_mremap, -1,
+        SYS_mprotect, -1,
+        SYS_munmap, -1,
+        SYS_lseek, -1,
+        SYS_read, -1,
+        SYS_set_thread_area, -1,
+        SYS_uname, -1,
+        SYS_write, -1,
+        SYS_writev, -1,
+        SYS_time, -1,
+        SYS_readlink, -1, //原本ubuntu 12.04不需要这一条
+        -1
+    };
 
 int RF_PASCAL[512] =
-{
-    SYS_close,          -1,
-    SYS_execve,         1,
-    SYS_exit_group,     -1,
-    SYS_futex,          -1,
-    SYS_getrlimit,      -1,
-    SYS_gettimeofday,   -1,
-    SYS_ioctl,          -1,
-    SYS_mmap,           -1,
-    SYS_mremap,         -1,
-    SYS_munmap,         -1,
-    SYS_lseek,          -1,
-    SYS_read,           -1,
-    SYS_readlink,       -1,
-    SYS_rt_sigaction,   -1,
-    SYS_uname,          -1,
-    SYS_write,          -1,
-    SYS_writev,         -1,
-    SYS_time,           -1,
-    SYS_readlink,       -1,
-    -1
-};
+    {
+        SYS_close, -1,
+        SYS_execve, 1,
+        SYS_exit_group, -1,
+        SYS_futex, -1,
+        SYS_getrlimit, -1,
+        SYS_gettimeofday, -1,
+        SYS_ioctl, -1,
+        SYS_mmap, -1,
+        SYS_mremap, -1,
+        SYS_munmap, -1,
+        SYS_lseek, -1,
+        SYS_read, -1,
+        SYS_readlink, -1,
+        SYS_rt_sigaction, -1,
+        SYS_uname, -1,
+        SYS_write, -1,
+        SYS_writev, -1,
+        SYS_time, -1,
+        SYS_readlink, -1,
+        -1
+    };
 
 int RF_JAVA[512] =
-{
-    SYS_access,         -1,
-    SYS_arch_prctl,     -1,
-    SYS_brk,            -1,
-    SYS_clone,          -1,
-    SYS_close,          -1,
-    SYS_execve,         -1,
-    SYS_exit_group,     -1,
-    SYS_fstat,          -1,
-    SYS_futex,          -1,
-    SYS_getegid,        -1,
-    SYS_geteuid,        -1,
-    SYS_getgid,         -1,
-    SYS_getrlimit,      -1,
-    SYS_gettimeofday,   -1,
-    SYS_getuid,         -1,
-    SYS_mmap,           -1,
-    SYS_mremap,         -1,
-    SYS_mprotect,       -1,
-    SYS_munmap,         -1,
-    SYS_lseek,          -1,
-    SYS_open,           -1,
-    SYS_read,           -1,
-    SYS_readlink,       -1,
-    SYS_rt_sigaction,   -1,
-    SYS_rt_sigprocmask, -1,
-    SYS_set_robust_list,-1,
-    SYS_set_tid_address,-1,
-    SYS_stat,           -1,
-    SYS_uname,          -1,
-    SYS_write,          -1,
-    SYS_writev,         -1,
-    SYS_time,           -1,
-    SYS_readlink,       -1,
-    -1
-};
+    {
+        SYS_access, -1,
+        SYS_arch_prctl, -1,
+        SYS_brk, -1,
+        SYS_clone, -1,
+        SYS_close, -1,
+        SYS_execve, -1,
+        SYS_exit_group, -1,
+        SYS_fstat, -1,
+        SYS_futex, -1,
+        SYS_getegid, -1,
+        SYS_geteuid, -1,
+        SYS_getgid, -1,
+        SYS_getrlimit, -1,
+        SYS_gettimeofday, -1,
+        SYS_getuid, -1,
+        SYS_mmap, -1,
+        SYS_mremap, -1,
+        SYS_mprotect, -1,
+        SYS_munmap, -1,
+        SYS_lseek, -1,
+        SYS_open, -1,
+        SYS_read, -1,
+        SYS_readlink, -1,
+        SYS_rt_sigaction, -1,
+        SYS_rt_sigprocmask, -1,
+        SYS_set_robust_list, -1,
+        SYS_set_tid_address, -1,
+        SYS_stat, -1,
+        SYS_uname, -1,
+        SYS_write, -1,
+        SYS_writev, -1,
+        SYS_time, -1,
+        SYS_readlink, -1,
+        -1
+    };
 #endif
 
 //根据 RF_* 数组来初始化RF_table
-void init_RF_table(int lang)
-{
-    int *p = NULL;
-    switch (lang)
-    {
-        case JUDGE_CONF::LANG_C:
-            p = RF_C;
-            break;
-        case JUDGE_CONF::LANG_CPP:
-            p = RF_CPP;
-            break;
-        case JUDGE_CONF::LANG_JAVA:
-            p = RF_JAVA;
-            break;
-        //case judge_conf::LANG_PASCAL:
-        //    p = RF_PASCAL;
-        //    break;
-        default:
-            FM_LOG_WARNING("Unknown language: %d", lang);
-            break;
-    }
-    memset(RF_table, 0, sizeof(RF_table));
-    for (int i = 0; p[i] >= 0; i += 2)
-    {
-        RF_table[p[i]] = p[i+1];
-    }
+void init_RF_table(int lang) {
+  int *p = NULL;
+  switch (lang) {
+    case JUDGE_CONF::LANG_C:
+      p = RF_C;
+      break;
+    case JUDGE_CONF::LANG_CPP:
+      p = RF_CPP;
+      break;
+    case JUDGE_CONF::LANG_JAVA:
+      p = RF_JAVA;
+      break;
+      //case judge_conf::LANG_PASCAL:
+      //    p = RF_PASCAL;
+      //    break;
+    default:
+      FM_LOG_WARNING("Unknown language: %d", lang);
+      break;
+  }
+  memset(RF_table, 0, sizeof(RF_table));
+  for (int i = 0; p[i] >= 0; i += 2) {
+    RF_table[p[i]] = p[i + 1];
+  }
 }
 
 #endif

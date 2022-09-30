@@ -32,7 +32,8 @@
 $ sudo ./Core -c ./test/test.c -t 1000 -m 65535 -s -S 2 -d ./test/
 ```
 
-上面表明，用户提交的代码是 `./test/test.c`，时限 1000 ms，内存限制 65535 KB，需要 SpecialJudge，SpecialJudge 程序的语言是 C++，运行的文件夹在 `./test/` 下。
+上面表明，用户提交的代码是 `./test/test.c`，时限 1000 ms，内存限制 65535 KB，需要 SpecialJudge，SpecialJudge 程序的语言是
+C++，运行的文件夹在 `./test/` 下。
 
 ## Build
 
