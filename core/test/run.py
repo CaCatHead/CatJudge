@@ -3,17 +3,22 @@
 # -*- coding: utf-8 -*-
 
 import os
+import pwd
+import grp
+import sys
 import shutil
 import subprocess
-import sys
 import tempfile
 
 
-def compile_source(source):
-    commands = ["g++", source, "-o", "Main", "-static", "-w",
+def compile_source(source, tmp_dir):
+    output =  os.path.join(tmp_dir, "a.out")
+    commands = ["g++", source, "-o", output, "-static", "-w",
                 "-lm", "-std=c++11", "-O2", "-DONLINE_JUDGE"]
     try:
         subprocess.check_output(commands, stderr=subprocess.STDOUT)
+        os.chmod(output, 0o775)
+        os.chown(output, pwd.getpwnam("nobody").pw_uid, grp.getgrnam("nogroup").gr_gid)
         return None
     except subprocess.CalledProcessError as e:
         return e.output
@@ -24,7 +29,7 @@ def run(executable, source, testcase):
     tmp_dir = tempfile.mkdtemp()
     source_path = os.path.join(tmp_dir, source)
     shutil.copy(os.path.join(__dir__, "source", source), source_path)
-    err_output = compile_source(source_path)
+    err_output = compile_source(source_path, tmp_dir)
     if err_output:
         shutil.rmtree(tmp_dir)
         return False
@@ -34,7 +39,9 @@ def run(executable, source, testcase):
 
     commands = [executable, "-d", tmp_dir, "-l", "2", "-s", "lcmp"]
     code = subprocess.call(commands, cwd=os.path.dirname(executable))
-    shutil.rmtree(tmp_dir)
+
+    print(os.listdir(tmp_dir))
+    # shutil.rmtree(tmp_dir)
 
     if code != 0:
         return False

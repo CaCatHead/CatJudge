@@ -1,3 +1,4 @@
+#include <pwd.h>
 #include <errno.h>
 #include <unistd.h>
 
@@ -17,12 +18,17 @@
 
 extern int errno;
 
+using CONF::EXIT;
+using CONF::Verdict;
+using CONF::Language;
+
 /**
  * 超时的回调函数
  */
 static void timeout(int sig) {
   if (sig == SIGALRM) {
-    exit(CONF::EXIT::TIMEOUT);
+    FM_LOG_TRACE("Receive SIGALRM, exit process.");
+    exit(EXIT::TIMEOUT);
   }
 }
 
@@ -41,33 +47,33 @@ static int malarm(int which, int milliseconds) {
 /*
  * 输入输出重定向
  */
-static void redirect_io() {
-  FM_LOG_TRACE("Start to redirect the IO.");
+static void redirect_io(std::string in, std::string out, std::string err) {
+  FM_LOG_TRACE("Start redirecting IO.");
 
-  stdin = freopen(PROBLEM::input_file.c_str(), "r", stdin);
-  stdout = freopen(PROBLEM::exec_output.c_str(), "w", stdout);
-  //stderr = freopen("/dev/null", "w", stderr);
+  stdin = freopen(in.c_str(), "r", stdin);
+  stdout = freopen(out.c_str(), "w", stdout);
+  stderr = freopen(err.c_str(), "w", stderr);
 
   if (stdin == NULL || stdout == NULL) {
-    FM_LOG_WARNING("It occur a error when freopen: stdin(%p) stdout(%p)", stdin, stdout);
-    exit(CONF::EXIT::PRE_JUDGE);
+    FM_LOG_WARNING("It occurred an error when freopen: stdin(%p) stdout(%p)", stdin, stdout);
+    exit(EXIT::PRE_JUDGE);
   }
 
-  FM_LOG_TRACE("redirect io is OK.");
+  FM_LOG_TRACE("Redirecting IO is OK.");
 }
 
 /*
  * 程序运行的限制
  * CPU时间、堆栈、输出文件大小等
  */
-static void set_limit() {
+static void set_limit(Context *ctx) {
   rlimit lim;
 
-  lim.rlim_max = (PROBLEM::time_limit - PROBLEM::time_usage + 999) / 1000 + 1;//硬限制
+  lim.rlim_max = (ctx->time_limit - ctx->result->time + 999) / 1000 + 1;//硬限制
   lim.rlim_cur = lim.rlim_max; //软限制
   if (setrlimit(RLIMIT_CPU, &lim) < 0) {
     FM_LOG_WARNING("error setrlimit for RLIMIT_CPU");
-    exit(JUDGE_CONF::EXIT_SET_LIMIT);
+    exit(EXIT::SET_LIMIT);
   }
 
   //内存不能在此做限制
@@ -78,7 +84,7 @@ static void set_limit() {
   //堆栈空间限制
   getrlimit(RLIMIT_STACK, &lim);
 
-  int rlim = JUDGE_CONF::STACK_SIZE_LIMIT * JUDGE_CONF::KILO;
+  int rlim = CONF::STACK_SIZE_LIMIT * CONF::KILO;
   if (lim.rlim_max <= rlim) {
     FM_LOG_WARNING("cannot set stack size to higher(%d <= %d)", lim.rlim_max, rlim);
   } else {
@@ -87,207 +93,298 @@ static void set_limit() {
 
     if (setrlimit(RLIMIT_STACK, &lim) < 0) {
       FM_LOG_WARNING("error setrlimit for RLIMIT_STACK");
-      exit(JUDGE_CONF::EXIT_SET_LIMIT);
+      exit(EXIT::SET_LIMIT);
     }
   }
 
-  log_close(); //关闭log，防止log造成OLE
+  // TODO: why?
+//  log_close(); //关闭 log，防止 log 造成 OLE
 
-  //输出文件大小限制
-  lim.rlim_max = PROBLEM::output_limit * JUDGE_CONF::KILO;
+  // 输出文件大小限制
+  lim.rlim_max = ctx->output_limit * CONF::KILO;
   lim.rlim_cur = lim.rlim_max;
   if (setrlimit(RLIMIT_FSIZE, &lim) < 0) {
     perror("setrlimit RLIMIT_FSIZE failed\n");
-    exit(JUDGE_CONF::EXIT_SET_LIMIT);
+    exit(EXIT::SET_LIMIT);
   }
 }
 
+/*
+ * 安全性控制
+ * chroot限制程序只能在某目录下操作，无法影响到外界
+ * setuid使其只拥有nobody的最低系统权限
+ */
+static void security_control(Context *ctx) {
+  struct passwd *nobody = getpwnam("nobody");
+
+  if (nobody == NULL) {
+    FM_LOG_WARNING("Well, where is nobody? I cannot live without him. %d: %s", errno, strerror(errno));
+    exit(EXIT::SET_SECURITY);
+  }
+
+  // chdir
+  if (EXIT_SUCCESS != chdir(ctx->run_dir)) {
+    FM_LOG_WARNING("chdir(%s) failed, %d: %s", ctx->run_dir, errno, strerror(errno));
+    exit(EXIT::SET_SECURITY);
+  }
+
+  char cwd[1024], *tmp = getcwd(cwd, 1024);
+  if (tmp == NULL) {
+    FM_LOG_WARNING("Oh, where i am now? I cannot getcwd. %d: %s", errno, strerror(errno));
+    exit(EXIT::SET_SECURITY);
+  }
+
+  // chroot
+  // Java 比较特殊，一旦 chroot 或 setuid，那么 JVM 就跑不起来了
+  if (ctx->language != Language::JAVA) {
+    if (EXIT_SUCCESS != chroot(cwd)) {
+      FM_LOG_WARNING("chroot(%s) failed. %d: %s", cwd, errno, strerror(errno));
+      exit(EXIT::SET_SECURITY);
+    }
+    // setuid
+    if (EXIT_SUCCESS != setuid(nobody->pw_uid)) {
+      FM_LOG_WARNING("setuid(%d) failed. %d: %s", nobody->pw_uid, errno, strerror(errno));
+      exit(EXIT::SET_SECURITY);
+    }
+  }
+}
+
+//系统调用在进和出的时候都会暂停, 把控制权交给judge
+static bool in_syscall = true;
+
+static bool is_valid_syscall(Language lang, int syscall_id, pid_t child, user_regs_struct regs) {
+  in_syscall = !in_syscall;
+  //FM_LOG_DEBUG("syscall: %d, %s, count: %d", syscall_id, in_syscall?"in":"out", RF_table[syscall_id]);
+  if (RF_table[syscall_id] == 0) {
+    //如果RF_table中对应的syscall_id可以被调用的次数为0, 则为RF
+    long addr;
+    if (syscall_id == SYS_open) {
+#if __WORDSIZE == 32
+      addr = regs.ebx;
+#else
+      addr = regs.rdi;
+#endif
+#define LONGSIZE sizeof(long)
+      union u {
+        unsigned long val;
+        char chars[LONGSIZE];
+      } data;
+      unsigned long i = 0, j = 0, k = 0;
+      char filename[300];
+      while (true) {
+        data.val = ptrace(PTRACE_PEEKDATA, child, addr + i, NULL);
+        i += LONGSIZE;
+        for (j = 0; j < LONGSIZE && data.chars[j] > 0 && k < 256; j++) {
+          filename[k++] = data.chars[j];
+        }
+        if (j < LONGSIZE && data.chars[j] == 0)
+          break;
+      }
+      filename[k] = 0;
+      //FM_LOG_TRACE("syscall open: filename: %s", filename);
+      if (strstr(filename, "..") != NULL) {
+        return false;
+      }
+      if (strstr(filename, "/proc/") == filename) {
+        return true;
+      }
+      if (strstr(filename, "/dev/tty") == filename) {
+        // TODO: ?
+        PROBLEM::result = Verdict::RE;
+        exit(EXIT::OK);
+      }
+    }
+    return false;
+  } else if (RF_table[syscall_id] > 0) {
+    //如果RF_table中对应的syscall_id可被调用的次数>0
+    //且是在退出syscall的时候, 那么次数减一
+    if (in_syscall == false)
+      RF_table[syscall_id]--;
+  } else {
+    //RF_table中syscall_id对应的指<0, 表示是不限制调用的
+    ;
+  }
+  return true;
+}
 
 /*
  * 执行用户提交的程序
  */
-//static Result* run(Context* ctx) {
-//  struct Result* result = new Result();
-//
-//  struct rusage rused;
-//
-//  pid_t executive = fork();
-//
-//  if (executive < 0) {
-//    exit(CONF::EXIT::PRE_JUDGE);
-//  } else if (executive == 0) {
-//    // 子进程，用户程序
-//    FM_LOG_TRACE("Start Judging.");
-//
-//    redirect_io();
-//
-//    security_control();
-//
-//    int real_time_limit = PROBLEM::time_limit;
-//    if (EXIT_SUCCESS != malarm(ITIMER_REAL, real_time_limit)) {
-//      exit(JUDGE_CONF::EXIT_PRE_JUDGE);
-//    }
-//
-//    set_limit();
-//
-//    if (ptrace(PTRACE_TRACEME, 0, NULL, NULL) < 0) {
-//      exit(CONF::EXIT::PRE_JUDGE_PTRACE);
-//    }
-//
-//    if (ctx->language == CONF::Language::C || ctx->language == CONF::Language::CPP) {
-//      execl("./a.out", "a.out", NULL);
-//    } else {
-//      execlp("java", "java", "Main", NULL);
-//    }
-//
-//    // 走到这了说明出错了
-//    exit(CONF::EXIT::PRE_JUDGE_EXECLP);
-//  } else {
-//    // 父进程
-//    int status = 0;  //子进程状态
-//    int syscall_id = 0; //系统调用号
-//
-//    struct user_regs_struct regs; //寄存器
-//
-//    init_RF_table(ctx->language); //初始化系统调用表
-//
-//    while (true) {//循环监控子进程
-//      if (wait4(executive, &status, 0, &rused) < 0) {
-//        FM_LOG_WARNING("wait4 failed.");
-//        exit(JUDGE_CONF::EXIT_JUDGE);
-//      }
-//
-//      // 自行退出
-//      if (WIFEXITED(status)) {
-//        if (ctx->language != CONF::Language::JAVA ||
-//            WEXITSTATUS(status) == EXIT_SUCCESS) {
-//          FM_LOG_TRACE("OK, normal quit. All is good.");
-//
-//          //PROBLEM::result = JUDGE_CONF::PROCEED;
-//        } else {
-//          FM_LOG_WARNING("oh, some error occurred. Abnormal quit.");
-//          PROBLEM::result = JUDGE_CONF::RE;
-//        }
-//        break;
-//      }
-//
-//      //被信号终止掉了
-//      if (WIFSIGNALED(status) || (WIFSTOPPED(status) && WSTOPSIG(status) != SIGTRAP)) { //要过滤掉SIGTRAP信号
-//        int sig = 0;
-//        if (WIFSIGNALED(status)) {
-//          sig = WTERMSIG(status);
-//          FM_LOG_WARNING("child signaled by %d : %s", sig, strsignal(sig));
-//        } else {
-//          sig = WSTOPSIG(status);
-//          FM_LOG_WARNING("child stop by %d : %s\n", sig, strsignal(sig));
-//        }
-//
-//        switch (sig) {
-//          //TLE
-//          case SIGALRM:
-//          case SIGXCPU:
-//          case SIGVTALRM:
-//          case SIGKILL:
-//            FM_LOG_TRACE("Well, Time Limit Exceeded");
-//            PROBLEM::time_usage = 0;
-//            PROBLEM::memory_usage = 0;
-//            PROBLEM::result = JUDGE_CONF::TLE;
-//            break;
-//          case SIGXFSZ:
-//            FM_LOG_TRACE("File Limit Exceeded");
-//            PROBLEM::time_usage = 0;
-//            PROBLEM::memory_usage = 0;
-//            PROBLEM::result = JUDGE_CONF::OLE;
-//            break;
-//          case SIGSEGV:
-//          case SIGFPE:
-//          case SIGBUS:
-//          case SIGABRT:
-//            //FM_LOG_TRACE("RE了");
-//            PROBLEM::time_usage = 0;
-//            PROBLEM::memory_usage = 0;
-//            PROBLEM::result = JUDGE_CONF::RE;
-//            break;
-//          default:
-//            //FM_LOG_TRACE("不知道哪儿跪了");
-//            PROBLEM::time_usage = 0;
-//            PROBLEM::memory_usage = 0;
-//            PROBLEM::result = JUDGE_CONF::RE;
-//            break;
-//        }
-//
-//        ptrace(PTRACE_KILL, executive, NULL, NULL);
-//        break;
-//      }
-//
-//      //MLE
-//      PROBLEM::memory_usage = std::max((long int) PROBLEM::memory_usage,
-//                                       rused.ru_minflt * (getpagesize() / JUDGE_CONF::KILO));
-//
-//      if (PROBLEM::memory_usage > PROBLEM::memory_limit) {
-//        PROBLEM::time_usage = 0;
-//        PROBLEM::memory_usage = 0;
-//        PROBLEM::result = JUDGE_CONF::MLE;
-//        FM_LOG_TRACE("Well, Memory Limit Exceeded.");
-//        ptrace(PTRACE_KILL, executive, NULL, NULL);
-//        break;
-//      }
-//
-//      //获得子进程的寄存器，目的是为了获知其系统调用
-//      if (ptrace(PTRACE_GETREGS, executive, NULL, &regs) < 0) {
-//        FM_LOG_WARNING("ptrace PTRACE_GETREGS failed");
-//        exit(CONF::EXIT::JUDGE);
-//      }
-//
-//#ifdef __i386__
-//      syscall_id = regs.orig_eax;
-//#else
-//      syscall_id = regs.orig_rax;
-//#endif
-//      //检查系统调用是否合法
-//      if (syscall_id > 0 &&
-//          !is_valid_syscall(PROBLEM::lang, syscall_id, executive, regs)) {
-//        FM_LOG_WARNING("restricted function %d\n", syscall_id);
-//        if (syscall_id == SYS_rt_sigprocmask) {
-//          FM_LOG_WARNING("The glibc failed.");
-//        } else {
-//          //FM_LOG_WARNING("%d\n", SYS_write);
-//          FM_LOG_WARNING("restricted function table");
-//        }
-//        PROBLEM::result = JUDGE_CONF::RE;
-//        ptrace(PTRACE_KILL, executive, NULL, NULL);
-//        break;
-//      }
-//
-//      if (ptrace(PTRACE_SYSCALL, executive, NULL, NULL) < 0) {
-//        FM_LOG_WARNING("ptrace PTRACE_SYSCALL failed.");
-//        exit(CONF::EXIT::JUDGE);
-//      }
-//    }
-//  }
-//
-//  //这儿关于time_usage和memory_usage计算的有点混乱
-//  //主要是为了减轻web的任务
-//  //只要不是AC，就把time_usage和memory_usage归0
-//  if (PROBLEM::result == JUDGE_CONF::SE) {
-//    PROBLEM::time_usage += (rused.ru_utime.tv_sec * 1000 +
-//                            rused.ru_utime.tv_usec / 1000);
-//    PROBLEM::time_usage += (rused.ru_stime.tv_sec * 1000 +
-//                            rused.ru_stime.tv_usec / 1000);
-//  }
-//
-//  return result;
-//}
+static Result *run(Context *ctx) {
+  struct Result *result = new Result();
+  ctx->result = result;
+
+  struct rusage rused;
+
+  pid_t executive = fork();
+
+  if (executive < 0) {
+    exit(EXIT::PRE_JUDGE);
+  } else if (executive == 0) {
+    // 子进程: 用户程序
+    FM_LOG_TRACE("Start Judging.");
+
+    redirect_io(ctx->input_file(), ctx->output_file(), ctx->error_file());
+
+    security_control(ctx);
+
+    int real_time_limit = ctx->time_limit;
+    if (EXIT_SUCCESS != malarm(ITIMER_REAL, real_time_limit)) {
+      exit(EXIT::PRE_JUDGE);
+    }
+
+    set_limit(ctx);
+
+    if (ptrace(PTRACE_TRACEME, 0, NULL, NULL) < 0) {
+      exit(EXIT::PRE_JUDGE_PTRACE);
+    }
+
+    if (ctx->language == Language::C || ctx->language == Language::CPP) {
+      int err = execl("./a.out", "a.out", NULL);
+      if (err == -1) {
+        FM_LOG_FATAL("Execl error: %d", errno);
+      }
+    } else {
+      int err = execlp("java", "java", "Main", NULL);
+      if (err == -1) {
+        FM_LOG_FATAL("Execlp error: %d", errno);
+      }
+    }
+
+    // 走到这了说明出错了
+    exit(EXIT::PRE_JUDGE_EXECLP);
+  } else {
+    // 父进程
+    int status = 0;  //子进程状态
+    int syscall_id = 0; //系统调用号
+
+    struct user_regs_struct regs; //寄存器
+
+    init_RF_table(ctx->language); //初始化系统调用表
+
+    while (true) {//循环监控子进程
+      if (wait4(executive, &status, 0, &rused) < 0) {
+        FM_LOG_WARNING("wait4 failed.");
+        exit(EXIT::JUDGE);
+      }
+
+      // 自行退出
+      if (WIFEXITED(status)) {
+        if (ctx->language != Language::JAVA ||
+            WEXITSTATUS(status) == EXIT_SUCCESS) {
+          FM_LOG_TRACE("OK, normal quit. All is good.");
+        } else {
+          FM_LOG_WARNING("Oh, some error occurred. Abnormal quit.");
+          result->verdict = Verdict::RE;
+        }
+        break;
+      }
+
+      // 被信号终止掉了
+      // 要过滤掉 SIGTRAP 信号
+      if (WIFSIGNALED(status) || (WIFSTOPPED(status) && WSTOPSIG(status) != SIGTRAP)) {
+        int sig = 0;
+        if (WIFSIGNALED(status)) {
+          sig = WTERMSIG(status);
+          FM_LOG_WARNING("child signaled by %d : %s", sig, strsignal(sig));
+        } else {
+          sig = WSTOPSIG(status);
+          FM_LOG_WARNING("child stop by %d : %s", sig, strsignal(sig));
+        }
+
+        switch (sig) {
+          //TLE
+          case SIGALRM:
+          case SIGXCPU:
+          case SIGVTALRM:
+          case SIGKILL:
+            FM_LOG_TRACE("Time Limit Exceeded");
+            result->verdict = Verdict::TLE;
+            break;
+          case SIGXFSZ:
+            FM_LOG_TRACE("File Limit Exceeded");
+            result->verdict = Verdict::OLE;
+            break;
+          case SIGSEGV:
+          case SIGFPE:
+          case SIGBUS:
+          case SIGABRT:
+            FM_LOG_TRACE("Runtime Error");
+            result->verdict = Verdict::RE;
+            break;
+          default:
+            FM_LOG_TRACE("Unknown Error");
+            result->verdict = Verdict::RE;
+            break;
+        }
+
+        ptrace(PTRACE_KILL, executive, NULL, NULL);
+        break;
+      }
+
+      // MLE
+      result->memory = std::max((long int) result->memory,
+                                rused.ru_minflt * (getpagesize() / CONF::KILO));
+
+      if (result->verdict == Verdict::SE && result->memory > ctx->memory_limit) {
+        result->verdict = Verdict::MLE;
+        FM_LOG_TRACE("Well, Memory Limit Exceeded.");
+        ptrace(PTRACE_KILL, executive, NULL, NULL);
+        break;
+      }
+
+      //获得子进程的寄存器，目的是为了获知其系统调用
+      if (ptrace(PTRACE_GETREGS, executive, NULL, &regs) < 0) {
+        FM_LOG_WARNING("ptrace PTRACE_GETREGS failed");
+        exit(EXIT::JUDGE);
+      }
+
+#ifdef __i386__
+      syscall_id = regs.orig_eax;
+#else
+      syscall_id = regs.orig_rax;
+#endif
+      //检查系统调用是否合法
+      if (syscall_id > 0 &&
+          !is_valid_syscall(ctx->language, syscall_id, executive, regs)) {
+        FM_LOG_WARNING("restricted function %d\n", syscall_id);
+        if (syscall_id == SYS_rt_sigprocmask) {
+          FM_LOG_WARNING("The glibc failed.");
+        } else {
+          //FM_LOG_WARNING("%d\n", SYS_write);
+          FM_LOG_WARNING("restricted function table");
+        }
+        result->verdict = Verdict::RE;
+        ptrace(PTRACE_KILL, executive, NULL, NULL);
+        break;
+      }
+
+      if (ptrace(PTRACE_SYSCALL, executive, NULL, NULL) < 0) {
+        FM_LOG_WARNING("ptrace PTRACE_SYSCALL failed.");
+        exit(EXIT::JUDGE);
+      }
+    }
+  }
+
+  // 这儿关于time_usage和memory_usage计算的有点混乱
+  // 主要是为了减轻 web 的任务
+  // 只要不是 AC，就把 time_usage 和 memory_usage 归 0
+  result->time = 0;
+  result->time += (rused.ru_utime.tv_sec * 1000 +
+                   rused.ru_utime.tv_usec / 1000);
+  result->time += (rused.ru_stime.tv_sec * 1000 +
+                   rused.ru_stime.tv_usec / 1000);
+
+  return result;
+}
 
 Result *judge(Context *ctx) {
   if (EXIT_SUCCESS != malarm(ITIMER_REAL, ctx->time_limit + CONF::JUDGE_TIME_LIMIT)) {
     FM_LOG_WARNING("Set the alarm for this judge program failed, %d: %s", errno, strerror(errno));
-    exit(CONF::EXIT::VERY_FIRST);
+    exit(EXIT::VERY_FIRST);
   }
 
   signal(SIGALRM, timeout);
 
-//  run(ctx);
-
-  return nullptr;
+  return run(ctx);
 }

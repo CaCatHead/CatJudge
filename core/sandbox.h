@@ -3,6 +3,6 @@
 
 #include "context.h"
 
-Result* judge(Context *ctx);
+Result *judge(Context *ctx);
 
 #endif //CATJUDGE_SANDBOX_H

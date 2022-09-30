@@ -10,6 +10,58 @@
 #include "context.h"
 #include "sandbox.cpp"
 
+static Context* global_context = nullptr;
+
+/*
+ * 输出判题结果到结果文件
+ */
+static void output_result() {
+  if (global_context == nullptr) return;
+  if (global_context->result == nullptr) return;
+
+  FILE *result_file = fopen(global_context->result_file().c_str(), "w");
+
+  std::string status;
+  switch (global_context->result->verdict) {
+    case Verdict::CE:
+      status = "Compile Error";
+      break;
+    case Verdict::TLE:
+      status = "Time Limit Exceeded";
+      break;
+    case Verdict::MLE:
+      status = "Memory Limit Exceeded";
+      break;
+    case Verdict::OLE:
+      status = "Output Limit Exceeded";
+      break;
+    case Verdict::RE:
+      status = "Runtime Error";
+      break;
+    case Verdict::WA:
+      status = "Wrong Answer";
+      break;
+    case Verdict::AC:
+      status = "Accepted";
+      break;
+    case Verdict::PE:
+      status = "Presentation Error";
+      break;
+    default:
+      status = "System Error";
+      break;
+  }
+
+  fprintf(result_file, "%s\n", status.c_str());
+  fprintf(result_file, "%d\n", global_context->result->time);
+  fprintf(result_file, "%d\n", global_context->result->memory);
+//  fprintf(result_file, "%s\n", PROBLEM::extra_message.c_str());
+
+  FM_LOG_TRACE("Verdict: %s", status.c_str());
+  FM_LOG_TRACE("Time   : %d ms", global_context->result->time);
+  FM_LOG_TRACE("Memory : %d KB", global_context->result->memory);
+}
+
 static void print_help_message() {
   printf("catjudge/%s\n", CATJUDGE_VERSION);
   puts("");
@@ -83,7 +135,11 @@ Context *parse_cli_args(int argc, char *argv[]) {
 int main(int argc, char *argv[]) {
   log_open(LOG_PATH);
 
+  // 退出程序时的回调函数，用于输出判题结果
+  atexit(output_result);
+
   Context *ctx = parse_cli_args(argc, argv);
+  global_context = ctx;
 
   // 为了构建沙盒，必须要有 root 权限
   if (geteuid() != 0) {

@@ -9,7 +9,7 @@ struct Result {
   /**
    * 结果代号
    */
-  CONF::VERDICT verdict = CONF::VERDICT::SE;
+  CONF::Verdict verdict = CONF::Verdict::SE;
 
   /**
    * 内存使用量, 单位: ?
@@ -19,7 +19,7 @@ struct Result {
   /**
    * 时间使用量, 单位: ?
    */
-  int time_usage = 0;
+  int time = 0;
 
   /**
    * 额外信息
@@ -71,6 +71,26 @@ struct Context {
    * 运行结果
    */
   Result *result = nullptr;
+
+  std::string input_file() const {
+    return std::string(this->run_dir) + "/in.in";
+  }
+
+  std::string result_file() const {
+    return std::string(this->run_dir) + "/result.txt";
+  }
+
+  std::string output_file() const {
+    return std::string(this->run_dir) + "/out.txt";
+  }
+
+  std::string answer_file() const {
+    return std::string(this->run_dir) + "/out.out";
+  }
+
+  std::string error_file() const {
+    return std::string(this->run_dir) + "/err.txt";
+  }
 };
 
 #endif //CATJUDGE_CONTEXT_H

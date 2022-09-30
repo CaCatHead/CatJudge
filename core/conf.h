@@ -2,9 +2,21 @@
 #define CATJUDGE_CONF_H
 
 namespace CONF {
+  /**
+   * Judge 本身的时间限制, 单位: ms
+   */
   const int JUDGE_TIME_LIMIT = 15000;
 
-  enum VERDICT {
+  /**
+   * 程序运行的栈空间大小
+   */
+  const int STACK_SIZE_LIMIT = 8192;
+
+  const int KILO = 1024;
+  const int MEGA = KILO * KILO;
+  const int GIGA = KILO * MEGA;
+
+  enum Verdict {
     PROCEED = 0,  // 已经处理并且正确运行退出
     CE = 1,   // 编译错误
     TLE = 2,  // 超时
