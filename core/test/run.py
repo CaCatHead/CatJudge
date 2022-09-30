@@ -3,10 +3,11 @@
 # -*- coding: utf-8 -*-
 
 import os
-import sys
 import shutil
-import tempfile
 import subprocess
+import sys
+import tempfile
+
 
 def compile_source(source):
     commands = ["g++", source, "-o", "Main", "-static", "-w",
@@ -16,6 +17,7 @@ def compile_source(source):
         return None
     except subprocess.CalledProcessError as e:
         return e.output
+
 
 def run(executable, source, testcase):
     __dir__ = os.path.dirname(__file__)
@@ -38,6 +40,7 @@ def run(executable, source, testcase):
         return False
 
     return True
+
 
 if __name__ == '__main__':
     ok = run(sys.argv[1], sys.argv[2], sys.argv[3])

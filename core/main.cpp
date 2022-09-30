@@ -22,8 +22,8 @@ static void print_help_message() {
   exit(CONF::EXIT::HELP);
 }
 
-Context* parse_cli_args(int argc, char* argv[]) {
-  Context* ctx = new Context();
+Context *parse_cli_args(int argc, char *argv[]) {
+  Context *ctx = new Context();
 
   char opt;
   extern char *optarg;
@@ -80,10 +80,10 @@ Context* parse_cli_args(int argc, char* argv[]) {
   return ctx;
 }
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
   log_open(LOG_PATH);
 
-  Context* ctx = parse_cli_args(argc, argv);
+  Context *ctx = parse_cli_args(argc, argv);
 
   // 为了构建沙盒，必须要有 root 权限
   if (geteuid() != 0) {

@@ -105,7 +105,9 @@ static void set_limit() {
 /*
  * 执行用户提交的程序
  */
-//static void run(Context* ctx) {
+//static Result* run(Context* ctx) {
+//  struct Result* result = new Result();
+//
 //  struct rusage rused;
 //
 //  pid_t executive = fork();
@@ -272,9 +274,11 @@ static void set_limit() {
 //    PROBLEM::time_usage += (rused.ru_stime.tv_sec * 1000 +
 //                            rused.ru_stime.tv_usec / 1000);
 //  }
+//
+//  return result;
 //}
 
-void judge(Context* ctx) {
+Result *judge(Context *ctx) {
   if (EXIT_SUCCESS != malarm(ITIMER_REAL, ctx->time_limit + CONF::JUDGE_TIME_LIMIT)) {
     FM_LOG_WARNING("Set the alarm for this judge program failed, %d: %s", errno, strerror(errno));
     exit(CONF::EXIT::VERY_FIRST);
@@ -283,4 +287,6 @@ void judge(Context* ctx) {
   signal(SIGALRM, timeout);
 
 //  run(ctx);
+
+  return nullptr;
 }
