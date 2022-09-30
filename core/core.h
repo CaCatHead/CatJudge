@@ -32,14 +32,14 @@ namespace JUDGE_CONF {
   const int PE = 8;  //输出格式错误
   const int SE = 9;  //System Error，判题过程发生故障
 
-//一些常量
+  // 一些常量
   const int KILO = 1024;
   const int MEGA = KILO * KILO;
   const int GIGA = KILO * MEGA;
 
   const int GCC_COMPILE_ERROR = 1; //编译错误
 
-//退出原因
+  // 退出原因
   const int EXIT_OK = 0;   // 正常退出
   const int EXIT_HELP = 0;   // 输出帮助信息
   const int EXIT_UNPRIVILEGED = 1;   // 缺乏权限退出
@@ -58,19 +58,12 @@ namespace JUDGE_CONF {
   const int EXIT_TIMEOUT = 36;  // 超时退出
   const int EXIT_UNKNOWN = 127; // 不详
 
-//语言相关常量
+  // 语言相关常量
   const std::string languages[] = {"Unknown", "C", "C++", "Java"};
   const int LANG_UNKNOWN = 0;
   const int LANG_C = 1;
   const int LANG_CPP = 2;
   const int LANG_JAVA = 3;
-
-  enum Language {
-    UNKNOWN = 0,
-    C = 1,
-    CPP = 2,
-    JAVA = 3
-  };
 }
 
 namespace PROBLEM {
