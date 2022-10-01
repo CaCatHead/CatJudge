@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/XLoJ/CatJudge/actions/workflows/ci.yml/badge.svg)](https://github.com/XLoJ/CatJudge/actions/workflows/ci.yml)
 
-This is migrated from [NJUST-FishTeam/OnlineJudgeCore](https://github.com/NJUST-FishTeam/OnlineJudgeCore/tree/cat).
+A simple sandbox program used for competitive programming contest migrated from [NJUST-FishTeam/OnlineJudgeCore](https://github.com/NJUST-FishTeam/OnlineJudgeCore/tree/cat).
 
 ## Build
 
@@ -50,7 +50,7 @@ $ sudo ctest --verbose
 
 ## Usage
 
-Options:
+Command line options:
 
 + `-d <dir>`: Run directory
 + `-l <language>`: Code Language (one of `c`, `cpp`, `java`)
@@ -70,9 +70,11 @@ Run the program at the run directory `./test`, using at most 1000 ms time and at
 
 Before running this judge sandbox program, you should prepare the run directory with the following files.
 
-+ A compiled program `a.out` (for `c` and `cpp`) or `Main.java` (for `java`)
-+ Testcase input file: `in.in`
-+ Testcase answer file: `out.out`
++ A compiled program `a.out` (for `c` and `cpp`) or `Main.java` (for `java`).
++ Testcase input file: `in.in`.
++ Testcase answer file: `out.out`.
+
+An example client is located at `./core/test/run.py` used for unit test.
 
 ### Checker
 
