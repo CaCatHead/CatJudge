@@ -234,7 +234,7 @@ static Result *run(Context *ctx) {
 
     security_control(ctx);
 
-    int real_time_limit = ctx->time_limit;
+    int real_time_limit = ctx->time_limit + 1;
     if (EXIT_SUCCESS != malarm(ITIMER_REAL, real_time_limit)) {
       exit(EXIT::PRE_JUDGE);
     }
