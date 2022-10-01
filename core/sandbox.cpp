@@ -76,12 +76,12 @@ static void set_limit(Context *ctx) {
     exit(EXIT::SET_LIMIT);
   }
 
-  //内存不能在此做限制
-  //原因忘了，反正是linux的内存分配机制的问题
-  //所以得在运行时不断累计内存使用量来限制
+  // 内存不能在此做限制
+  // 原因忘了，反正是linux的内存分配机制的问题
+  // 所以得在运行时不断累计内存使用量来限制
 
 
-  //堆栈空间限制
+  // 堆栈空间限制
   getrlimit(RLIMIT_STACK, &lim);
 
   int rlim = ctx->memory_limit * CONF::KILO;
@@ -117,8 +117,8 @@ static void set_limit(Context *ctx) {
 
 /*
  * 安全性控制
- * chroot限制程序只能在某目录下操作，无法影响到外界
- * setuid使其只拥有nobody的最低系统权限
+ * chroot 限制程序只能在某目录下操作，无法影响到外界
+ * setuid 使其只拥有 nobody 的最低系统权限
  */
 static void security_control(Context *ctx) {
   struct passwd *nobody = getpwnam("nobody");
@@ -155,14 +155,14 @@ static void security_control(Context *ctx) {
   }
 }
 
-//系统调用在进和出的时候都会暂停, 把控制权交给judge
+// 系统调用在进和出的时候都会暂停, 把控制权交给judge
 static bool in_syscall = true;
 
 static bool is_valid_syscall(Language lang, int syscall_id, pid_t child, user_regs_struct regs) {
   in_syscall = !in_syscall;
-  //FM_LOG_DEBUG("syscall: %d, %s, count: %d", syscall_id, in_syscall?"in":"out", RF_table[syscall_id]);
+  // FM_LOG_DEBUG("syscall: %d, %s, count: %d", syscall_id, in_syscall?"in":"out", RF_table[syscall_id]);
   if (RF_table[syscall_id] == 0) {
-    //如果RF_table中对应的syscall_id可以被调用的次数为0, 则为RF
+    // 如果 RF_table 中对应的 syscall_id 可以被调用的次数为 0, 则为 RF
     long addr;
     if (syscall_id == SYS_open) {
 #if __WORDSIZE == 32
@@ -261,14 +261,14 @@ static Result *run(Context *ctx) {
     exit(EXIT::PRE_JUDGE_EXECLP);
   } else {
     // 父进程
-    int status = 0;  //子进程状态
-    int syscall_id = 0; //系统调用号
+    int status = 0;  // 子进程状态
+    int syscall_id = 0; // 系统调用号
 
-    struct user_regs_struct regs; //寄存器
+    struct user_regs_struct regs; // 寄存器
 
-    init_RF_table(ctx->language); //初始化系统调用表
+    init_RF_table(ctx->language); // 初始化系统调用表
 
-    while (true) {//循环监控子进程
+    while (true) {// 循环监控子进程
       if (wait4(executive, &status, 0, &rused) < 0) {
         FM_LOG_WARNING("wait4 failed.");
         exit(EXIT::JUDGE);
@@ -299,7 +299,7 @@ static Result *run(Context *ctx) {
         }
 
         switch (sig) {
-          //TLE
+          // TLE
           case SIGALRM:
           case SIGXCPU:
           case SIGVTALRM:
@@ -340,7 +340,7 @@ static Result *run(Context *ctx) {
         break;
       }
 
-      //获得子进程的寄存器，目的是为了获知其系统调用
+      // 获得子进程的寄存器，目的是为了获知其系统调用
       if (ptrace(PTRACE_GETREGS, executive, NULL, &regs) < 0) {
         FM_LOG_WARNING("ptrace PTRACE_GETREGS failed");
         exit(EXIT::JUDGE);
@@ -351,7 +351,7 @@ static Result *run(Context *ctx) {
 #else
       syscall_id = regs.orig_rax;
 #endif
-      //检查系统调用是否合法
+      // 检查系统调用是否合法
       if (syscall_id > 0 &&
           !is_valid_syscall(ctx->language, syscall_id, executive, regs)) {
         FM_LOG_WARNING("restricted function %d\n", syscall_id);
@@ -377,10 +377,12 @@ static Result *run(Context *ctx) {
   // 主要是为了减轻 web 的任务
   // 只要不是 AC，就把 time_usage 和 memory_usage 归 0
   result->time = 0;
-  result->time += (rused.ru_utime.tv_sec * 1000 +
-                   rused.ru_utime.tv_usec / 1000);
-  result->time += (rused.ru_stime.tv_sec * 1000 +
-                   rused.ru_stime.tv_usec / 1000);
+  result->time += (rused.ru_utime.tv_sec * 1000 + rused.ru_utime.tv_usec / 1000);
+  result->time += (rused.ru_stime.tv_sec * 1000 + rused.ru_stime.tv_usec / 1000);
+
+  if (result->verdict == Verdict::SE && result->time > ctx->time_limit) {
+    result->verdict = Verdict::TLE;
+  }
 
   return result;
 }
