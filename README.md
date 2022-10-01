@@ -82,7 +82,9 @@ You should follow the conventions of testlib checker. More details see [MikeMirz
 
 The following code is a simple checker used for the well-known problem "A + B".
 
-> **Note**: You should copy the header `testlib.h` to the include path of your computer (or judge server).
+> **Note**
+>
+> You should copy the header `testlib.h` to the include path of your computer (or judge server).
 
 ```cpp
 #include "testlib.h"
