@@ -12,7 +12,7 @@ A simple sandbox program used for competitive programming contest migrated from 
 >
 > Install latest [cmake](https://cmake.org/), C/C++ compiler ([gcc](https://gcc.gnu.org/) or [clang](https://clang.llvm.org/)), and [python 2/3](https://www.python.org/).
 
-Before building this project, you should first modify `CMakeLists.txt` to config the default checker (since we should not bring break changes to original system).
+Before building this project, you should first modify `CMakeLists.txt` to config the location of the default checker (the original version embedds the text diff checker, since we should not bring break changes).
 
 We recommend you use the checker [lcmp](https://github.com/MikeMirzayanov/testlib/blob/7fd543d7e6ae36a04bb382c5ebb4eee254362c6a/checkers/lcmp.cpp) (It diffs the content of each line, and ignores extra whitespaces).
 
