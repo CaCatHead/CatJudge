@@ -134,7 +134,7 @@ static void security_control(Context *ctx) {
     exit(EXIT::SET_SECURITY);
   }
 
-  char cwd[1024], *tmp = getcwd(cwd, 1024);
+  static char cwd[1024], *tmp = getcwd(cwd, 1024);
   if (tmp == NULL) {
     FM_LOG_WARNING("Oh, where i am now? I cannot getcwd. %d: %s", errno, strerror(errno));
     exit(EXIT::SET_SECURITY);
@@ -153,64 +153,6 @@ static void security_control(Context *ctx) {
       exit(EXIT::SET_SECURITY);
     }
   }
-}
-
-// 系统调用在进和出的时候都会暂停, 把控制权交给judge
-static bool in_syscall = true;
-
-static bool is_valid_syscall(Language lang, int syscall_id, pid_t child, user_regs_struct regs) {
-  in_syscall = !in_syscall;
-  // FM_LOG_DEBUG("syscall: %d, %s, count: %d", syscall_id, in_syscall?"in":"out", RF_table[syscall_id]);
-  if (RF_table[syscall_id] == 0) {
-    // 如果 RF_table 中对应的 syscall_id 可以被调用的次数为 0, 则为 RF
-    long addr;
-    if (syscall_id == SYS_open) {
-#if __WORDSIZE == 32
-      addr = regs.ebx;
-#else
-      addr = regs.rdi;
-#endif
-#define LONGSIZE sizeof(long)
-      union u {
-        unsigned long val;
-        char chars[LONGSIZE];
-      } data;
-      unsigned long i = 0, j = 0, k = 0;
-      char filename[300];
-      while (true) {
-        data.val = ptrace(PTRACE_PEEKDATA, child, addr + i, NULL);
-        i += LONGSIZE;
-        for (j = 0; j < LONGSIZE && data.chars[j] > 0 && k < 256; j++) {
-          filename[k++] = data.chars[j];
-        }
-        if (j < LONGSIZE && data.chars[j] == 0)
-          break;
-      }
-      filename[k] = 0;
-      //FM_LOG_TRACE("syscall open: filename: %s", filename);
-      if (strstr(filename, "..") != NULL) {
-        return false;
-      }
-      if (strstr(filename, "/proc/") == filename) {
-        return true;
-      }
-      if (strstr(filename, "/dev/tty") == filename) {
-        // TODO: ?
-        PROBLEM::result = Verdict::RE;
-        exit(EXIT::OK);
-      }
-    }
-    return false;
-  } else if (RF_table[syscall_id] > 0) {
-    //如果RF_table中对应的syscall_id可被调用的次数>0
-    //且是在退出syscall的时候, 那么次数减一
-    if (in_syscall == false)
-      RF_table[syscall_id]--;
-  } else {
-    //RF_table中syscall_id对应的指<0, 表示是不限制调用的
-    ;
-  }
-  return true;
 }
 
 /*
@@ -358,7 +300,6 @@ static Result *run(Context *ctx) {
         if (syscall_id == SYS_rt_sigprocmask) {
           FM_LOG_WARNING("The glibc failed.");
         } else {
-          //FM_LOG_WARNING("%d\n", SYS_write);
           FM_LOG_WARNING("restricted function table");
         }
         result->verdict = Verdict::RE;

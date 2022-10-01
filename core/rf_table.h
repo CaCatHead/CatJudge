@@ -4,7 +4,7 @@
 #include <string.h>
 #include <sys/syscall.h>
 
-#include "core.h"
+#include "conf.h"
 #include "logger.h"
 
 /*
@@ -257,22 +257,19 @@ int RF_JAVA[512] =
     };
 #endif
 
-//根据 RF_* 数组来初始化RF_table
+//根据 RF_* 数组来初始化 RF_table
 void init_RF_table(int lang) {
   int *p = NULL;
   switch (lang) {
-    case JUDGE_CONF::LANG_C:
+    case CONF::Language::C:
       p = RF_C;
       break;
-    case JUDGE_CONF::LANG_CPP:
+    case CONF::Language::CPP:
       p = RF_CPP;
       break;
-    case JUDGE_CONF::LANG_JAVA:
+    case CONF::Language::JAVA:
       p = RF_JAVA;
       break;
-      //case judge_conf::LANG_PASCAL:
-      //    p = RF_PASCAL;
-      //    break;
     default:
       FM_LOG_WARNING("Unknown language: %d", lang);
       break;
@@ -281,6 +278,67 @@ void init_RF_table(int lang) {
   for (int i = 0; p[i] >= 0; i += 2) {
     RF_table[p[i]] = p[i + 1];
   }
+}
+
+// 系统调用在进和出的时候都会暂停, 把控制权交给judge
+static bool in_syscall = true;
+
+bool is_valid_syscall(int lang, int syscall_id, pid_t child, user_regs_struct regs) {
+  in_syscall = !in_syscall;
+  // FM_LOG_DEBUG("syscall: %d, %s, count: %d", syscall_id, in_syscall?"in":"out", RF_table[syscall_id]);
+  if (RF_table[syscall_id] == 0) {
+    // 如果 RF_table 中对应的 syscall_id 可以被调用的次数为 0, 则为 RF
+    long addr;
+    if (syscall_id == SYS_open) {
+#if __WORDSIZE == 32
+      addr = regs.ebx;
+#else
+      addr = regs.rdi;
+#endif
+
+      const int LONGSIZE = sizeof(long);
+      
+      union u {
+        unsigned long val;
+        char chars[LONGSIZE];
+      } data;
+      
+      unsigned long i = 0, j = 0, k = 0;
+      static char filename[1024];
+      while (true) {
+        data.val = ptrace(PTRACE_PEEKDATA, child, addr + i, NULL);
+        i += LONGSIZE;
+        for (j = 0; j < LONGSIZE && data.chars[j] > 0 && k < 256; j++) {
+          filename[k++] = data.chars[j];
+        }
+        if (j < LONGSIZE && data.chars[j] == 0)
+          break;
+      }
+      filename[k] = 0;
+      
+      // FM_LOG_TRACE("syscall open: filename: %s", filename);
+      if (strstr(filename, "..") != NULL) {
+        return false;
+      }
+      if (strstr(filename, "/proc/") == filename) {
+        return true;
+      }
+      if (strstr(filename, "/dev/tty") == filename) {
+        // TODO: ?
+        // PROBLEM::result = Verdict::RE;
+        exit(CONF::EXIT::OK);
+      }
+    }
+    return false;
+  } else if (RF_table[syscall_id] > 0) {
+    // 如果 RF_table 中对应的 syscall_id 可被调用的次数 > 0
+    // 且是在退出 syscall 的时候, 那么次数减 1
+    if (in_syscall == false)
+      RF_table[syscall_id]--;
+  } else {
+    // RF_table 中 syscall_id 对应的指 < 0, 表示是不限制调用的
+  }
+  return true;
 }
 
 #endif
