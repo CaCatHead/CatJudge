@@ -6,7 +6,7 @@ const int mod = 1e9 + 7;
 
 int dfs(int u, int v) {
   if (u == v) return u;
-  return (dfs(u, v - 1) + 1) % mod;
+  return (dfs(u, v - 1) + 1 + u + v) % mod;
 }
 
 int main () {
