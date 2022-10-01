@@ -1,5 +1,7 @@
 # CatJudge
 
+[![CI](https://github.com/XLoJ/CatJudge/actions/workflows/ci.yml/badge.svg)](https://github.com/XLoJ/CatJudge/actions/workflows/ci.yml)
+
 This is migrated from [NJUST-FishTeam/OnlineJudgeCore](https://github.com/NJUST-FishTeam/OnlineJudgeCore/tree/cat).
 
 ## Build
