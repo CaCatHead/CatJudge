@@ -56,7 +56,7 @@ struct Context {
   /**
    * Checker
    */
-  const char *checker;
+  const char *checker = DEFAULT_CHECKER;
 
   /**
    * 沙盒路径，所有运行过程所在的文件夹， 包括：

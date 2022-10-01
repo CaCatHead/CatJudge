@@ -21,7 +21,7 @@ def compile_source(source, tmp_dir):
         return e.output
 
 
-def run(executable, source, testcase, expected):
+def run(executable, checker, source, testcase, expected):
     __dir__ = os.path.dirname(__file__)
     tmp_dir = tempfile.mkdtemp()
     os.chmod(tmp_dir, 0o775)
@@ -35,7 +35,7 @@ def run(executable, source, testcase, expected):
     shutil.copy(os.path.join(__dir__, "testcase", testcase + '.in'), os.path.join(tmp_dir, 'in.in'))
     shutil.copy(os.path.join(__dir__, "testcase", testcase + '.ans'), os.path.join(tmp_dir, 'out.out'))
 
-    commands = [executable, "-d", tmp_dir, "-l", "2", "-s", "lcmp"]
+    commands = [executable, "-d", tmp_dir, "-l", "2", "-s", checker]
     code = subprocess.call(commands, cwd=os.path.dirname(executable))
 
     def read_verdict():
@@ -56,6 +56,6 @@ def run(executable, source, testcase, expected):
 
 
 if __name__ == '__main__':
-    ok = run(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
+    ok = run(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])
     if not ok:
         exit(1)

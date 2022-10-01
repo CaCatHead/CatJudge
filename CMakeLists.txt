@@ -6,9 +6,14 @@ if (${IS_DEBUG})
   add_definitions(-D__DEBUG__)
 endif ()
 
+set(PROJECT_VERSION 0.0.1)
+set(LOG_PATH ./catjudge_log.txt)
+set(DEFAULT_CHECKER ${CMAKE_CURRENT_BINARY_DIR}/lcmp)
+
 add_definitions(
-        -DCATJUDGE_VERSION=\"0.0.1\"
-        -DLOG_PATH=\"./catjudge_log.txt\")
+        -DCATJUDGE_VERSION=\"${PROJECT_VERSION}\"
+        -DLOG_PATH=\"${LOG_PATH}\"
+        -DDEFAULT_CHECKER=\"${DEFAULT_CHECKER}\")
 
 add_executable(main core/main.cpp)
 add_executable(prev core/core.cpp)
@@ -29,12 +34,12 @@ enable_testing()
 add_test(NAME Help
          COMMAND $<TARGET_FILE:main> "-h")
 add_test(NAME APLUSB
-         COMMAND python ../core/test/run.py $<TARGET_FILE:main> ac.cpp 1 "System Error")
+         COMMAND python ../core/test/run.py $<TARGET_FILE:main> $<TARGET_FILE:lcmp> ac.cpp 1 "System Error")
 add_test(NAME APLUSB_TLE
-         COMMAND python ../core/test/run.py $<TARGET_FILE:main> tle.cpp 1 "Time Limit Exceeded")
+         COMMAND python ../core/test/run.py $<TARGET_FILE:main> $<TARGET_FILE:lcmp> tle.cpp 1 "Time Limit Exceeded")
 add_test(NAME APLUSB_MLE
-         COMMAND python ../core/test/run.py $<TARGET_FILE:main> mle.cpp 1 "Memory Limit Exceeded")
+         COMMAND python ../core/test/run.py $<TARGET_FILE:main> $<TARGET_FILE:lcmp> mle.cpp 1 "Memory Limit Exceeded")
 add_test(NAME APLUSB_STACK_ERR
-         COMMAND python ../core/test/run.py $<TARGET_FILE:main> stack.cpp 2 "Runtime Error")
+         COMMAND python ../core/test/run.py $<TARGET_FILE:main> $<TARGET_FILE:lcmp> stack.cpp 2 "Runtime Error")
 add_test(NAME APLUSB_STACK_OK
-         COMMAND python ../core/test/run.py $<TARGET_FILE:main> stack.cpp 3 "System Error")
+         COMMAND python ../core/test/run.py $<TARGET_FILE:main> $<TARGET_FILE:lcmp> stack.cpp 3 "System Error")

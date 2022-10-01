@@ -328,6 +328,10 @@ static Result *run(Context *ctx) {
   return result;
 }
 
+static Result* check(Context* ctx) {
+  return ctx->result;
+}
+
 Result *judge(Context *ctx) {
   if (EXIT_SUCCESS != malarm(ITIMER_REAL, ctx->time_limit + CONF::JUDGE_TIME_LIMIT)) {
     FM_LOG_WARNING("Set the alarm for this judge program failed, %d: %s", errno, strerror(errno));
@@ -336,5 +340,7 @@ Result *judge(Context *ctx) {
 
   signal(SIGALRM, timeout);
 
-  return run(ctx);
+  run(ctx);
+
+  return check(ctx);
 }
