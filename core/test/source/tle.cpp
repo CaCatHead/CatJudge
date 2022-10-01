@@ -8,6 +8,6 @@ int main () {
   for (int i = 1; i <= (int)1e9; i++) {
     a += b; a %= 998244353;
   }
-  cout << a + b;
+  cout << a + b << '\n';
   return 0;
 }

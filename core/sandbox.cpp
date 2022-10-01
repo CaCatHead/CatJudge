@@ -84,10 +84,14 @@ static void set_limit(Context *ctx) {
   //堆栈空间限制
   getrlimit(RLIMIT_STACK, &lim);
 
-  int rlim = CONF::STACK_SIZE_LIMIT * CONF::KILO;
-  if (lim.rlim_max <= rlim) {
-    FM_LOG_WARNING("cannot set stack size to higher(%d <= %d)", lim.rlim_max, rlim);
+  int rlim = ctx->memory_limit * CONF::KILO;
+  FM_LOG_DEBUG("stack limit size is %d KB", lim.rlim_max);
+
+  if (0 < lim.rlim_max && lim.rlim_max <= rlim) {
+    FM_LOG_WARNING("cannot set stack size to higher (%d <= %d)", lim.rlim_max, rlim);
   } else {
+    FM_LOG_DEBUG("setrlimit for RLIMIT_STACK is %d KB", rlim);
+
     lim.rlim_max = rlim;
     lim.rlim_cur = rlim;
 
@@ -97,8 +101,10 @@ static void set_limit(Context *ctx) {
     }
   }
 
-  // TODO: why?
-//  log_close(); //关闭 log，防止 log 造成 OLE
+  #ifndef __DEBUG__
+    // Release build: 关闭 log, 防止 log 造成 OLE
+    log_close();
+  #endif
 
   // 输出文件大小限制
   lim.rlim_max = ctx->output_limit * CONF::KILO;

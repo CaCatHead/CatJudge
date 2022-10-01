@@ -14,8 +14,8 @@ This is migrated from [NJUST-FishTeam/OnlineJudgeCore](https://github.com/NJUST-
 # Clone submodule testlib
 $ git submodule update --init --recursive
 
-# Configure project
-$ cmake -B ./build -G "Unix Makefiles"
+# Configure release project
+$ cmake -DCMAKE_BUILD_TYPE:STRING=Release -B ./build -G "Unix Makefiles"
 
 # Build project
 $ cmake --build ./build --config Debug --target all -j 18

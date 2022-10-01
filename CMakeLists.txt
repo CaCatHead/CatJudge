@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.0.0)
 project(CatJudge VERSION 0.1.0)
 
+set(IS_DEBUG CMAKE_BUILD_TYPE STREQUAL "Debug")
+if (${IS_DEBUG})
+  add_definitions(-D__DEBUG__)
+endif ()
+
 add_definitions(
         -DCATJUDGE_VERSION=\"0.0.1\"
         -DLOG_PATH=\"./catjudge_log.txt\")
@@ -29,3 +34,7 @@ add_test(NAME APLUSB_TLE
          COMMAND python ../core/test/run.py $<TARGET_FILE:main> tle.cpp 1 "Time Limit Exceeded")
 add_test(NAME APLUSB_MLE
          COMMAND python ../core/test/run.py $<TARGET_FILE:main> mle.cpp 1 "Memory Limit Exceeded")
+add_test(NAME APLUSB_STACK_ERR
+         COMMAND python ../core/test/run.py $<TARGET_FILE:main> stack.cpp 2 "Runtime Error")
+add_test(NAME APLUSB_STACK_OK
+         COMMAND python ../core/test/run.py $<TARGET_FILE:main> stack.cpp 3 "System Error")
