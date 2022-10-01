@@ -16,7 +16,6 @@ add_definitions(
         -DDEFAULT_CHECKER=\"${DEFAULT_CHECKER}\")
 
 add_executable(main core/main.cpp)
-add_executable(prev core/core.cpp)
 
 include_directories(./testlib)
 list(APPEND checkers fcmp hcmp lcmp ncmp nyesno rcmp4 rcmp6 rcmp9 wcmp yesno)
@@ -27,6 +26,8 @@ endforeach()
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
 include(CPack)
+
+# Test
 
 include(CTest)
 enable_testing()
