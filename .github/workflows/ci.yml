@@ -22,7 +22,7 @@ jobs:
 
       - name: Build
         run: |
-          cmake -B ./build -G "Unix Makefiles"
+          cmake -DCMAKE_BUILD_TYPE:STRING=Debug -B ./build -G "Unix Makefiles"
           cmake --build ./build --config Debug --target all -j 18
 
       - name: Test
