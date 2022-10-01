@@ -8,6 +8,12 @@ add_definitions(
 add_executable(main core/main.cpp)
 add_executable(prev core/core.cpp)
 
+include_directories(./testlib)
+list(APPEND checkers fcmp hcmp lcmp ncmp nyesno rcmp4 rcmp6 rcmp9 wcmp yesno)
+foreach(checker IN LISTS checkers)
+  add_executable(${checker} testlib/checkers/${checker}.cpp)
+endforeach()
+
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
 include(CPack)
