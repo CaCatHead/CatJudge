@@ -72,6 +72,17 @@ struct Context {
    */
   Result *result = nullptr;
 
+  std::string checker_name() const {
+    int len = strlen(this->checker);
+    int st = 0;
+    for (int i = 0; i < len; i++) {
+      if (this->checker[i] == '/') {
+        st = i + 1;
+      }
+    }
+    return std::string(this->checker).substr(st);
+  }
+
   std::string input_file() const {
     return std::string(this->run_dir) + "/in.in";
   }
@@ -90,6 +101,14 @@ struct Context {
 
   std::string error_file() const {
     return std::string(this->run_dir) + "/err.txt";
+  }
+
+  std::string checker_output_file() const {
+    return std::string(this->run_dir) + "/checker.out";
+  }
+
+  std::string checker_error_file() const {
+    return std::string(this->run_dir) + "/checker.err";
   }
 };
 

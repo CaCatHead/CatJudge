@@ -134,7 +134,8 @@ static void security_control(Context *ctx) {
     exit(EXIT::SET_SECURITY);
   }
 
-  static char cwd[1024], *tmp = getcwd(cwd, 1024);
+  static char cwd[1024];
+  char *tmp = getcwd(cwd, 1024);
   if (tmp == NULL) {
     FM_LOG_WARNING("Oh, where i am now? I cannot getcwd. %d: %s", errno, strerror(errno));
     exit(EXIT::SET_SECURITY);
@@ -154,6 +155,43 @@ static void security_control(Context *ctx) {
     }
   }
 }
+
+/*
+ * 对 SpecialJudge 程序的安全性控制
+ * 毕竟不是自己写的代码，得防着点
+ */
+static void security_control_checker(Context* ctx) {
+  struct passwd *nobody = getpwnam("nobody");
+  if (nobody == NULL) {
+    FM_LOG_WARNING("Well, where is nobody? I cannot live without him. %d: %s", errno, strerror(errno));
+    exit(EXIT::SET_SECURITY);
+  }
+
+  if (EXIT_SUCCESS != chdir(ctx->run_dir)) {
+    FM_LOG_WARNING("chdir(%s) failed, %d: %s", ctx->run_dir, errno, strerror(errno));
+    exit(EXIT::SET_SECURITY);
+  }
+
+  static char cwd[1024];
+  char *tmp = getcwd(cwd, 1024);
+  if (tmp == NULL) {
+    FM_LOG_WARNING("Oh, where i am now? I cannot getcwd. %d: %s", errno, strerror(errno));
+    exit(EXIT::SET_SECURITY);
+  }
+
+  //if (PROBLEM::spj_lang != JUDGE_CONF::LANG_JAVA) {
+  //    if (EXIT_SUCCESS != chroot(cwd)) {
+  //        FM_LOG_WARNING("chroot(%s) failed. %d: %s", cwd, errno, strerror(errno));
+  //        exit(JUDGE_CONF::EXIT_SET_SECURITY);
+  //    }
+  //}
+
+  //if (EXIT_SUCCESS != setuid(nobody->pw_uid)) {
+  //    FM_LOG_WARNING("setuid(%d) failed. %d: %s", nobody->pw_uid, errno, strerror(errno));
+  //    exit(JUDGE_CONF::EXIT_SET_SECURITY);
+  //}
+}
+
 
 /*
  * 执行用户提交的程序
@@ -329,6 +367,73 @@ static Result *run(Context *ctx) {
 }
 
 static Result* check(Context* ctx) {
+  pid_t spj_pid = fork();
+  int status = 0;
+
+  if (spj_pid < 0) {
+    FM_LOG_WARNING("Fork special judge failed.");
+    exit(EXIT::COMPARE_SPJ);
+  } else if (spj_pid == 0) {
+    FM_LOG_TRACE("Start checking.");
+
+    #ifndef __DEBUG__
+      stdout = freopen(ctx->checker_output_file().c_str(), "w", stdout);
+      stderr = freopen(ctx->checker_error_file().c_str(), "w", stderr);
+
+      if (stdout == NULL || stderr == NULL) {
+        FM_LOG_WARNING("It occurred an error when freopen: stdin(%p) stdout(%p)", stdin, stdout);
+        exit(EXIT::COMPARE_SPJ);
+      }
+    #endif
+
+    // SPJ 时间限制
+    if (EXIT_SUCCESS != malarm(ITIMER_REAL, ctx->time_limit * 2 + 1)) {
+      FM_LOG_WARNING("Set time limit for spj failed.");
+      exit(EXIT::COMPARE_SPJ);
+    }
+
+    security_control_checker(ctx);
+
+    // only support excuting binary
+    int err = execl(
+      ctx->checker,
+      ctx->checker_name().c_str(),
+      ctx->input_file().c_str(),
+      ctx->output_file().c_str(),
+      ctx->answer_file().c_str(), NULL);
+    if (err == -1) {
+      FM_LOG_FATAL("Execl checker error: %d", errno);
+    }
+
+    exit(EXIT::COMPARE_SPJ_FORK);
+  } else {
+    if (wait4(spj_pid, &status, 0, NULL) < 0) {
+      FM_LOG_WARNING("spj wait4 failed.");
+      exit(EXIT::COMPARE_SPJ);
+    }
+
+    FM_LOG_DEBUG("Checker return code: %d", status);
+
+    if (WIFEXITED(status)) {
+      int return_code = WEXITSTATUS(status); 
+      if (return_code == EXIT_SUCCESS) {
+        FM_LOG_TRACE("Checker normally quit.");
+        ctx->result->verdict = Verdict::AC;
+      } else if (return_code == 3) {
+        FM_LOG_TRACE("Checker failed.");
+        ctx->result->verdict = Verdict::SE;
+      } else {
+        ctx->result->verdict = Verdict::WA;
+      }
+    } else if (WIFSIGNALED(status) && WTERMSIG(status) == SIGALRM) {
+      ctx->result->verdict = Verdict::SE;
+      FM_LOG_WARNING("Well, the special judge program consume too much time.");
+    } else {
+      ctx->result->verdict = Verdict::SE;
+      FM_LOG_WARNING("Actually, I do not knwon why the special judge program dead.");
+    }
+  }
+
   return ctx->result;
 }
 
@@ -342,5 +447,9 @@ Result *judge(Context *ctx) {
 
   run(ctx);
 
-  return check(ctx);
+  if (ctx->result->verdict == Verdict::SE) {
+    return check(ctx);
+  } else {
+    return ctx->result;
+  }
 }

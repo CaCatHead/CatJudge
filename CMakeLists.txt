@@ -34,7 +34,7 @@ enable_testing()
 add_test(NAME Help
          COMMAND $<TARGET_FILE:main> "-h")
 add_test(NAME APLUSB
-         COMMAND python ../core/test/run.py $<TARGET_FILE:main> $<TARGET_FILE:lcmp> ac.cpp 1 "System Error")
+         COMMAND python ../core/test/run.py $<TARGET_FILE:main> $<TARGET_FILE:lcmp> ac.cpp 1 "Accepted")
 add_test(NAME APLUSB_TLE
          COMMAND python ../core/test/run.py $<TARGET_FILE:main> $<TARGET_FILE:lcmp> tle.cpp 1 "Time Limit Exceeded")
 add_test(NAME APLUSB_MLE
@@ -42,4 +42,4 @@ add_test(NAME APLUSB_MLE
 add_test(NAME APLUSB_STACK_ERR
          COMMAND python ../core/test/run.py $<TARGET_FILE:main> $<TARGET_FILE:lcmp> stack.cpp 2 "Runtime Error")
 add_test(NAME APLUSB_STACK_OK
-         COMMAND python ../core/test/run.py $<TARGET_FILE:main> $<TARGET_FILE:lcmp> stack.cpp 3 "System Error")
+         COMMAND python ../core/test/run.py $<TARGET_FILE:main> $<TARGET_FILE:lcmp> stack.cpp 3 "Wrong Answer")
