@@ -64,7 +64,7 @@ Example:
 $ sudo ./build/main  -d ./test -l cpp -t 1000 -m 65535 -s ./build/lcmp
 ```
 
-Run the program at the run directory `./test`, using at most 1000 ms time and at most 65536 KB memory, and the checker is located at `./build/lcmp`.
+Run the C++ program at the run directory `./test`, using at most 1000 ms time and at most 65536 KB memory, and the checker is located at `./build/lcmp`.
 
 ### Conventions
 
