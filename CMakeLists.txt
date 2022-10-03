@@ -6,12 +6,11 @@ if (${IS_DEBUG})
   add_definitions(-D__DEBUG__)
 endif ()
 
-set(PROJECT_VERSION 0.0.1)
 set(LOG_PATH ./catjudge.log)
 set(DEFAULT_CHECKER ${CMAKE_CURRENT_BINARY_DIR}/lcmp)
 
 add_definitions(
-        -DCATJUDGE_VERSION=\"${PROJECT_VERSION}\"
+        -DCATJUDGE_VERSION=\"${CMAKE_PROJECT_VERSION}\"
         -DLOG_PATH=\"${LOG_PATH}\"
         -DDEFAULT_CHECKER=\"${DEFAULT_CHECKER}\")
 
