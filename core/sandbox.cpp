@@ -101,10 +101,10 @@ static void set_limit(Context *ctx) {
     }
   }
 
-  #ifndef __DEBUG__
-    // Release build: 关闭 log, 防止 log 造成 OLE
-    log_close();
-  #endif
+#ifndef __DEBUG__
+  // Release build: 关闭 log, 防止 log 造成 OLE
+  log_close();
+#endif
 
   // 输出文件大小限制
   lim.rlim_max = ctx->output_limit * CONF::KILO;
@@ -148,11 +148,12 @@ static void security_control(Context *ctx) {
       FM_LOG_WARNING("chroot(%s) failed. %d: %s", cwd, errno, strerror(errno));
       exit(EXIT::SET_SECURITY);
     }
-    // setuid
-    if (EXIT_SUCCESS != setuid(nobody->pw_uid)) {
-      FM_LOG_WARNING("setuid(%d) failed. %d: %s", nobody->pw_uid, errno, strerror(errno));
-      exit(EXIT::SET_SECURITY);
-    }
+  }
+
+  // setuid is ok for Java
+  if (EXIT_SUCCESS != setuid(nobody->pw_uid)) {
+    FM_LOG_WARNING("setuid(%d) failed. %d: %s", nobody->pw_uid, errno, strerror(errno));
+    exit(EXIT::SET_SECURITY);
   }
 }
 
@@ -160,7 +161,7 @@ static void security_control(Context *ctx) {
  * 对 SpecialJudge 程序的安全性控制
  * 毕竟不是自己写的代码，得防着点
  */
-static void security_control_checker(Context* ctx) {
+static void security_control_checker(Context *ctx) {
   struct passwd *nobody = getpwnam("nobody");
   if (nobody == NULL) {
     FM_LOG_WARNING("Well, where is nobody? I cannot live without him. %d: %s", errno, strerror(errno));
@@ -310,7 +311,7 @@ static Result *run(Context *ctx) {
 
       // MLE
       // ru_maxrss (since Linux 2.6.32)
-      result->memory = std::max((long int) result-> memory, rused.ru_maxrss);
+      result->memory = std::max((long int) result->memory, rused.ru_maxrss);
       // result->memory = std::max((long int) result->memory, rused.ru_minflt * (getpagesize() / CONF::KILO));
 
       if (result->verdict == Verdict::SE && result->memory > ctx->memory_limit) {
@@ -366,7 +367,7 @@ static Result *run(Context *ctx) {
   return result;
 }
 
-static Result* check(Context* ctx) {
+static Result *check(Context *ctx) {
   pid_t spj_pid = fork();
   int status = 0;
 
@@ -376,15 +377,15 @@ static Result* check(Context* ctx) {
   } else if (spj_pid == 0) {
     FM_LOG_TRACE("Start checking.");
 
-    #ifndef __DEBUG__
-      stdout = freopen(ctx->checker_output_file().c_str(), "w", stdout);
-      stderr = freopen(ctx->checker_error_file().c_str(), "w", stderr);
+#ifndef __DEBUG__
+    stdout = freopen(ctx->checker_output_file().c_str(), "w", stdout);
+    stderr = freopen(ctx->checker_error_file().c_str(), "w", stderr);
 
-      if (stdout == NULL || stderr == NULL) {
-        FM_LOG_WARNING("It occurred an error when freopen: stdin(%p) stdout(%p)", stdin, stdout);
-        exit(EXIT::COMPARE_SPJ);
-      }
-    #endif
+    if (stdout == NULL || stderr == NULL) {
+      FM_LOG_WARNING("It occurred an error when freopen: stdin(%p) stdout(%p)", stdin, stdout);
+      exit(EXIT::COMPARE_SPJ);
+    }
+#endif
 
     // SPJ 时间限制
     if (EXIT_SUCCESS != malarm(ITIMER_REAL, ctx->time_limit * 2 + 1)) {
@@ -396,11 +397,11 @@ static Result* check(Context* ctx) {
 
     // Only support executing binary
     int err = execl(
-      ctx->checker,
-      ctx->checker_name().c_str(),
-      ctx->input_file().c_str(),
-      ctx->output_file().c_str(),
-      ctx->answer_file().c_str(), NULL);
+        ctx->checker,
+        ctx->checker_name().c_str(),
+        ctx->input_file().c_str(),
+        ctx->output_file().c_str(),
+        ctx->answer_file().c_str(), NULL);
     if (err == -1) {
       FM_LOG_FATAL("Execl checker error: %d", errno);
     }
@@ -415,7 +416,7 @@ static Result* check(Context* ctx) {
     FM_LOG_DEBUG("Checker return code: %d", status);
 
     if (WIFEXITED(status)) {
-      int return_code = WEXITSTATUS(status); 
+      int return_code = WEXITSTATUS(status);
       if (return_code == EXIT_SUCCESS) {
         FM_LOG_TRACE("Checker normally quit.");
         ctx->result->verdict = Verdict::AC;

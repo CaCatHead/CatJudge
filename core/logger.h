@@ -56,18 +56,18 @@ const int LOG_TRACE = 4;
 const int LOG_DEBUG = 5;
 
 static char LOG_LEVEL_NOTE[][10] = {
-  "FATAL  ",
-  "WARNING",
-  "MONITOR",
-  "NOTICE ",
-  "TRACE  ",
-  "DEBUG  "
+    "FATAL  ",
+    "WARNING",
+    "MONITOR",
+    "NOTICE ",
+    "TRACE  ",
+    "DEBUG  "
 };
 
 #ifdef __DEBUG__
-  #define FM_LOG_DEBUG(x...)   log_write(LOG_DEBUG, __FILE__, __LINE__, ##x)
+#define FM_LOG_DEBUG(x...)   log_write(LOG_DEBUG, __FILE__, __LINE__, ##x)
 #else
-  #define FM_LOG_DEBUG(...)    42
+#define FM_LOG_DEBUG(...)    42
 #endif
 
 #define FM_LOG_TRACE(x...)   log_write(LOG_TRACE, __FILE__, __LINE__, ##x)

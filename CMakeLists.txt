@@ -51,3 +51,7 @@ add_test(NAME FORK_BOMB
          COMMAND python ../core/test/run.py $<TARGET_FILE:main> $<TARGET_FILE:lcmp> fork.cpp 3 "Runtime Error")
 add_test(NAME FORBIDDEN_FS
         COMMAND python ../core/test/run.py $<TARGET_FILE:main> $<TARGET_FILE:lcmp> fs.cpp 3 "Runtime Error")
+add_test(NAME APLUSB_JAVA
+        COMMAND python ../core/test/run.py $<TARGET_FILE:main> $<TARGET_FILE:lcmp> ac.java 1 "Accepted")
+add_test(NAME APLUSB_JAVA_FS
+        COMMAND python ../core/test/run.py $<TARGET_FILE:main> $<TARGET_FILE:lcmp> fs.java 1 "Wrong Answer")

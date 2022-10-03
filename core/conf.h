@@ -49,6 +49,10 @@ namespace CONF {
     UNKNOWN = 127, // 不详
   };
 
+  const char LanguageStr[][8] = {
+      "unknown", "c", "cpp", "java"
+  };
+
   enum Language {
     C = 1,
     CPP = 2,

@@ -20,6 +20,11 @@ jobs:
       - name: Get latest CMake and ninja
         uses: lukka/get-cmake@latest
 
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '11'
+
       - name: Build
         run: |
           cmake -DCMAKE_BUILD_TYPE:STRING=Debug -B ./build -G "Unix Makefiles"

@@ -10,7 +10,7 @@
 #include "context.h"
 #include "sandbox.cpp"
 
-static Context* global_context = nullptr;
+static Context *global_context = nullptr;
 
 /*
  * 输出判题结果到结果文件
@@ -87,11 +87,11 @@ Context *parse_cli_args(int argc, char *argv[]) {
         break;
       case 'l':
         if (std::isalpha(optarg[0])) {
-          if (std::strcmp(optarg, "c")) {
+          if (std::strcmp(optarg, "c") == 0) {
             ctx->language = CONF::Language::C;
-          } else if (std::strcmp(optarg, "cpp")) {
+          } else if (std::strcmp(optarg, "cpp") == 0) {
             ctx->language = CONF::Language::CPP;
-          } else if (std::strcmp(optarg, "java")) {
+          } else if (std::strcmp(optarg, "java") == 0) {
             ctx->language = CONF::Language::JAVA;
           } else {
             FM_LOG_FATAL("Unknown code language provided: %s", optarg);
@@ -124,6 +124,7 @@ Context *parse_cli_args(int argc, char *argv[]) {
   }
 
   FM_LOG_DEBUG("Run    dir  : %s", ctx->run_dir);
+  FM_LOG_DEBUG("Language    : %s (%d)", CONF::LanguageStr[ctx->language], ctx->language);
   FM_LOG_DEBUG("Time   limit: %d", ctx->time_limit);
   FM_LOG_DEBUG("Memory limit: %d", ctx->memory_limit);
   FM_LOG_DEBUG("Output limit: %d", ctx->output_limit);
