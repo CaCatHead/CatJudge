@@ -30,4 +30,4 @@ jobs:
           cd ./build
           sudo ctest --verbose
           echo '----------'
-          cat ./catjudge_log.txt
+          cat ./catjudge.log
