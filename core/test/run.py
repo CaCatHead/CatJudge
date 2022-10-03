@@ -30,6 +30,7 @@ def run(executable, checker, source, testcase, expected):
     err_output = compile_source(source_path, tmp_dir)
     if err_output:
         shutil.rmtree(tmp_dir)
+        print(err_output)
         return False
 
     shutil.copy(os.path.join(__dir__, "testcase", testcase + '.in'), os.path.join(tmp_dir, 'in.in'))

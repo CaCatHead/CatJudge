@@ -334,11 +334,11 @@ static Result *run(Context *ctx) {
       // 检查系统调用是否合法
       if (syscall_id > 0 &&
           !is_valid_syscall(ctx->language, syscall_id, executive, regs)) {
-        FM_LOG_WARNING("restricted function %d\n", syscall_id);
+        FM_LOG_WARNING("Restricted system call: %d.", syscall_id);
         if (syscall_id == SYS_rt_sigprocmask) {
           FM_LOG_WARNING("The glibc failed.");
         } else {
-          FM_LOG_WARNING("restricted function table");
+          FM_LOG_WARNING("In restricted function table.");
         }
         result->verdict = Verdict::RE;
         ptrace(PTRACE_KILL, executive, NULL, NULL);
@@ -394,7 +394,7 @@ static Result* check(Context* ctx) {
 
     security_control_checker(ctx);
 
-    // only support excuting binary
+    // Only support executing binary
     int err = execl(
       ctx->checker,
       ctx->checker_name().c_str(),
@@ -430,7 +430,7 @@ static Result* check(Context* ctx) {
       FM_LOG_WARNING("Well, the special judge program consume too much time.");
     } else {
       ctx->result->verdict = Verdict::SE;
-      FM_LOG_WARNING("Actually, I do not knwon why the special judge program dead.");
+      FM_LOG_WARNING("Actually, I do not know why the special judge program dead.");
     }
   }
 

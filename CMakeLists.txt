@@ -7,7 +7,7 @@ if (${IS_DEBUG})
 endif ()
 
 set(PROJECT_VERSION 0.0.1)
-set(LOG_PATH ./catjudge_log.txt)
+set(LOG_PATH ./catjudge.log)
 set(DEFAULT_CHECKER ${CMAKE_CURRENT_BINARY_DIR}/lcmp)
 
 add_definitions(
@@ -50,3 +50,5 @@ add_test(NAME APLUSB_STACK_OK
          COMMAND python ../core/test/run.py $<TARGET_FILE:main> $<TARGET_FILE:lcmp> stack.cpp 3 "Wrong Answer")
 add_test(NAME FORK_BOMB
          COMMAND python ../core/test/run.py $<TARGET_FILE:main> $<TARGET_FILE:lcmp> fork.cpp 3 "Runtime Error")
+add_test(NAME FORBIDDEN_FS
+        COMMAND python ../core/test/run.py $<TARGET_FILE:main> $<TARGET_FILE:lcmp> fs.cpp 3 "Runtime Error")
