@@ -36,7 +36,7 @@ $ git submodule update --init --recursive
 $ cmake -DCMAKE_BUILD_TYPE:STRING=Release -B ./build -G "Unix Makefiles"
 
 # Build project
-$ cmake --build ./build --config Debug --target all -j 18
+$ cmake --build ./build --config Release --target all -j 18
 
 # You may need copy this program to the expected directory (optional)
 # $ cp ./build/main /usr/bin/catj 
