@@ -36,6 +36,10 @@ add_test(NAME Help
          COMMAND $<TARGET_FILE:main> "-h")
 add_test(NAME APLUSB
          COMMAND python ../core/test/run.py $<TARGET_FILE:main> $<TARGET_FILE:lcmp> ac.cpp 1 "Accepted")
+add_test(NAME APLUSB_WA
+        COMMAND python ../core/test/run.py $<TARGET_FILE:main> $<TARGET_FILE:lcmp> wa.cpp 2 "Wrong Answer")
+add_test(NAME APLUSB_RE
+        COMMAND python ../core/test/run.py $<TARGET_FILE:main> $<TARGET_FILE:lcmp> re.cpp 2 "Runtime Error")
 add_test(NAME APLUSB_TLE
          COMMAND python ../core/test/run.py $<TARGET_FILE:main> $<TARGET_FILE:lcmp> tle.cpp 1 "Time Limit Exceeded")
 add_test(NAME APLUSB_MLE
