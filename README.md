@@ -10,7 +10,9 @@ A simple sandbox program used for competitive programming contest migrated from 
 >
 > It works only on the **Linux**.
 >
-> Install latest [cmake](https://cmake.org/), C/C++ compiler ([gcc](https://gcc.gnu.org/) or [clang](https://clang.llvm.org/)), and [python 2/3](https://www.python.org/).
+> Install latest [cmake](https://cmake.org/) and C/C++ compiler ([gcc](https://gcc.gnu.org/) or [clang](https://clang.llvm.org/)).
+> 
+> Install [python 2/3](https://www.python.org/) and Java 8 for running testcases.
 
 Before building this project, you should first modify `CMakeLists.txt` to config the location of the default checker (the original version embedds the text diff checker, since we should not bring break changes).
 
@@ -35,6 +37,9 @@ $ cmake -DCMAKE_BUILD_TYPE:STRING=Release -B ./build -G "Unix Makefiles"
 
 # Build project
 $ cmake --build ./build --config Debug --target all -j 18
+
+# You may need copy this program to the expected directory (optional)
+# $ cp ./build/main /usr/bin/catj 
 
 # You may need copy the default checker to the expected directory (optional)
 # It depends on your previous configuration
