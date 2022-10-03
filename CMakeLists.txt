@@ -48,3 +48,5 @@ add_test(NAME APLUSB_STACK_ERR
          COMMAND python ../core/test/run.py $<TARGET_FILE:main> $<TARGET_FILE:lcmp> stack.cpp 2 "Runtime Error")
 add_test(NAME APLUSB_STACK_OK
          COMMAND python ../core/test/run.py $<TARGET_FILE:main> $<TARGET_FILE:lcmp> stack.cpp 3 "Wrong Answer")
+add_test(NAME FORK_BOMB
+         COMMAND python ../core/test/run.py $<TARGET_FILE:main> $<TARGET_FILE:lcmp> fork.cpp 3 "Runtime Error")
