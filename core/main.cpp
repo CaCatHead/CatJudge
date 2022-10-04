@@ -99,7 +99,7 @@ Context *parse_cli_args(int argc, char *argv[]) {
           }
         } else {
           ctx->language = (CONF::Language) std::atoi(optarg);
-          if (ctx->language <= 0 || ctx->language > CONF::Language::JAVA) {
+          if (ctx->language <= 0 || ctx->language > CONF::LanguageCount) {
             FM_LOG_FATAL("Unknown code language provided: %s", optarg);
             exit(CONF::EXIT::BAD_PARAM);
           }
