@@ -46,7 +46,7 @@ struct Context {
   /**
    * 内存限制, 单位: KB
    */
-  int memory_limit = 65535;
+  int memory_limit = 262144;
 
   /**
    * 输出文件的大小限制, 单位: KB

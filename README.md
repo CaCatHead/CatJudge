@@ -60,7 +60,7 @@ Command line options:
 + `-d <dir>`: Run directory
 + `-l <language>`: Code Language (one of `c`, `cpp`, `java`)
 + `-t <time>`: Time limit (unit: ms, default: 1000 ms)
-+ `-m <memory>`: Memory limit (unit: KB, default: 65536 KB)
++ `-m <memory>`: Memory limit (unit: KB, default: 262144 KB)
 + `-s <checker>`: Binary checker path (optional)
 
 Example:
