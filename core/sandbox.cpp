@@ -6,6 +6,7 @@
 #include <sys/time.h>
 #include <sys/user.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/ptrace.h>
 #include <sys/syscall.h>
@@ -49,6 +50,9 @@ static int malarm(int which, int milliseconds) {
  */
 static void redirect_io(std::string in, std::string out, std::string err) {
   FM_LOG_TRACE("Start redirecting IO.");
+
+  // 答案文件权限控制
+  chmod(out.c_str(), S_IRUSR | S_IWUSR);
 
   stdin = freopen(in.c_str(), "r", stdin);
   stdout = freopen(out.c_str(), "w", stdout);
