@@ -39,6 +39,8 @@ def run(executable, checker, source, testcase, expected):
 
     shutil.copy(os.path.join(__dir__, "testcase", testcase + '.in'), os.path.join(tmp_dir, 'in.in'))
     shutil.copy(os.path.join(__dir__, "testcase", testcase + '.ans'), os.path.join(tmp_dir, 'out.out'))
+    os.chmod(os.path.join(__dir__, "testcase", testcase + '.in'), stat.S_IRWXU)
+    os.chmod(os.path.join(__dir__, "testcase", testcase + '.ans'), stat.S_IRWXU)
 
     commands = [executable, "-d", tmp_dir, "-l", source.split('.')[-1], "-s", checker]
     code = subprocess.call(commands, cwd=os.path.dirname(executable))
