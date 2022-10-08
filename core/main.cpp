@@ -1,3 +1,4 @@
+#include <ctime>
 #include <cctype>
 #include <cstdio>
 #include <cstring>
@@ -133,8 +134,21 @@ Context *parse_cli_args(int argc, char *argv[]) {
   return ctx;
 }
 
+void start_log() {
+  static char path[1024];
+
+  time_t curTime = time(nullptr);
+  struct tm *localTime = localtime(&curTime);
+  int year = localTime->tm_year + 1900; // Year is # years since 1900
+  int month = localTime->tm_mon + 1; // Month is 0 - 11, add 1 to get a jan-dec 1-12 concept
+  int day = localTime->tm_mday;
+
+  sprintf(path, "%s/catj-%d-%d-%d.log", LOG_PATH, year, month, day);
+  log_open(path);
+}
+
 int main(int argc, char *argv[]) {
-  log_open(LOG_PATH);
+  start_log();
 
   // 退出程序时的回调函数，用于输出判题结果
   atexit(output_result);

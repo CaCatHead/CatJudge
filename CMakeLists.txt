@@ -6,7 +6,7 @@ if (${IS_DEBUG})
     add_definitions(-D__DEBUG__)
 endif ()
 
-set(LOG_PATH ./catjudge.log)
+set(LOG_PATH .)
 set(DEFAULT_CHECKER ${CMAKE_CURRENT_BINARY_DIR}/lcmp)
 
 add_definitions(

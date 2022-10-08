@@ -35,4 +35,4 @@ jobs:
           cd ./build
           sudo ctest --verbose
           echo '----------'
-          cat ./catjudge.log
+          ls *.log | xargs cat
