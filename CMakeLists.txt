@@ -9,6 +9,13 @@ endif ()
 set(LOG_PATH .)
 set(DEFAULT_CHECKER ${CMAKE_CURRENT_BINARY_DIR}/lcmp)
 
+if(DEFINED ENV{LOG_PATH})
+    set(LOG_PATH $ENV{LOG_PATH})
+endif ()
+if(DEFINED ENV{DEFAULT_CHECKER})
+    set(DEFAULT_CHECKER $ENV{DEFAULT_CHECKER})
+endif ()
+
 add_definitions(
         -DCATJUDGE_VERSION=\"${CMAKE_PROJECT_VERSION}\"
         -DLOG_PATH=\"${LOG_PATH}\"
