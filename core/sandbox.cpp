@@ -88,7 +88,8 @@ static void set_limit(Context *ctx) {
   // 堆栈空间限制
   getrlimit(RLIMIT_STACK, &lim);
 
-  int rlim = ctx->memory_limit * CONF::KILO;
+  // 比内存限制多加了 4MB
+  int rlim = ctx->memory_limit * CONF::KILO + 4 * CONF::MEGA;
   FM_LOG_DEBUG("stack limit size is %d KB", lim.rlim_max);
 
   if (0 < lim.rlim_max && lim.rlim_max <= rlim) {
@@ -245,6 +246,8 @@ static Result *run(Context *ctx) {
     // 走到这了说明出错了
     exit(EXIT::PRE_JUDGE_EXECLP);
   } else {
+    int init_mem = -1;
+
     // 父进程
     int status = 0;  // 子进程状态
     int syscall_id = 0; // 系统调用号
@@ -257,6 +260,15 @@ static Result *run(Context *ctx) {
       if (wait4(executive, &status, 0, &rused) < 0) {
         FM_LOG_WARNING("wait4 failed.");
         exit(EXIT::JUDGE);
+      }
+
+      // 记录首次启动时使用的内存？
+      if (init_mem == -1) {
+        FM_LOG_DEBUG("Init memory: %d KB", rused.ru_maxrss);
+        init_mem = rused.ru_maxrss;
+        if (init_mem < 0) {
+          init_mem = 0;
+        }
       }
 
       // 自行退出
@@ -315,7 +327,7 @@ static Result *run(Context *ctx) {
 
       // MLE
       // ru_maxrss (since Linux 2.6.32)
-      result->memory = std::max((long int) result->memory, rused.ru_maxrss);
+      result->memory = std::max((long int) result->memory, rused.ru_maxrss - init_mem);
       // result->memory = std::max((long int) result->memory, rused.ru_minflt * (getpagesize() / CONF::KILO));
 
       if (result->verdict == Verdict::SE && result->memory > ctx->memory_limit) {
