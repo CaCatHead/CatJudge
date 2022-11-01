@@ -75,16 +75,24 @@ static void print_help_message() {
   exit(CONF::EXIT::HELP);
 }
 
+static void print_version_message() {
+  printf("catjudge/%s\n", CATJUDGE_VERSION);
+  exit(CONF::EXIT::HELP);
+}
+
 Context *parse_cli_args(int argc, char *argv[]) {
   Context *ctx = new Context();
 
   char opt;
   extern char *optarg;
 
-  while ((opt = getopt(argc, argv, "l:t:m:d:s:h")) != -1) {
+  while ((opt = getopt(argc, argv, "l:t:m:d:s:hv")) != -1) {
     switch (opt) {
       case 'h':
         print_help_message();
+        break;
+      case 'v':
+        print_version_message();
         break;
       case 'l':
         if (std::isalpha(optarg[0])) {
