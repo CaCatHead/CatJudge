@@ -28,14 +28,14 @@
  *
  */
 
-#ifndef __LOGGER__
-#define __LOGGER__
+#ifndef __CATJ_LOGGER__
+#define __CATJ_LOGGER__
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#include <string.h>
-#include <stdarg.h>
+#include <cstdio>
+#include <cstdlib>
+#include <ctime>
+#include <cstring>
+#include <cstdarg>
 #include <unistd.h>
 #include <error.h>
 #include <sys/file.h>
@@ -72,12 +72,12 @@ static char LOG_LEVEL_NOTE[][10] = {
 
 #define FM_LOG_TRACE(x...)   log_write(LOG_TRACE, __FILE__, __LINE__, ##x)
 #define FM_LOG_NOTICE(x...)  log_write(LOG_NOTICE, __FILE__, __LINE__, ##x)
-#define FM_LOG_MONITOR(x...) log_write(LOG_MONITOR, __FILE__ __LINE__, ##x)
+#define FM_LOG_MONITOR(x...) log_write(LOG_MONITOR, __FILE__, __LINE__, ##x)
 #define FM_LOG_WARNING(x...) log_write(LOG_WARNING, __FILE__, __LINE__, ##x)
 #define FM_LOG_FATAL(x...)   log_write(LOG_FATAL, __FILE__, __LINE__, ##x)
 
-static FILE *log_fp = NULL;
-static char *log_filename = NULL;
+static FILE *log_fp = nullptr;
+static char *log_filename = nullptr;
 static int log_opened = 0;
 
 #define log_buffer_size 8192
@@ -93,7 +93,7 @@ int log_open(const char *filename) {
   log_filename = (char *) malloc(sizeof(char) * len + 1);
   strcpy(log_filename, filename);
   log_fp = fopen(log_filename, "a");
-  if (log_fp == NULL) {
+  if (log_fp == nullptr) {
     fprintf(stderr, "log_file: %s\n", log_filename);
     perror("can't not open log file");
     exit(1);
@@ -111,8 +111,8 @@ void log_close() {
     FM_LOG_TRACE("Close log file");
     fclose(log_fp);
     free(log_filename);
-    log_fp = NULL;
-    log_filename = NULL;
+    log_fp = nullptr;
+    log_filename = nullptr;
     log_opened = 0;
   }
 }
@@ -127,7 +127,7 @@ static void log_write(int level, const char *file,
   static char datetime[100];
   static char line_str[20];
   static time_t now;
-  now = time(NULL);
+  now = time(nullptr);
 
   strftime(datetime, 99, "%Y-%m-%d %H:%M:%S", localtime(&now));
   snprintf(line_str, 19, "%d", line);
@@ -137,8 +137,8 @@ static void log_write(int level, const char *file,
   va_end(ap);
 
   size_t count = snprintf(buffer, log_buffer_size,
-                          "%s [%s] [%s:%3d]%s %s\n",
-                          LOG_LEVEL_NOTE[level], datetime, file, line, log_extra_info, log_buffer);
+                          "%s [%s] [%11s:%3d]%s %s\n",
+                          LOG_LEVEL_NOTE[level], datetime, basename(file), line, log_extra_info, log_buffer);
   int log_fd = log_fp->_fileno;
   //puts(buffer);
   if (flock(log_fd, LOCK_EX) == 0) {
@@ -157,5 +157,4 @@ void log_add_info(const char *info) {
   int len = strlen(log_extra_info);
   snprintf(log_extra_info + len, log_buffer_size - len, "\n [%s]", info);
 }
-
 #endif
