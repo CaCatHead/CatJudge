@@ -9,6 +9,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
 
     steps:
       - uses: actions/checkout@v3
@@ -36,3 +39,7 @@ jobs:
           sudo ctest --verbose
           echo '----------'
           ls *.log | xargs cat
+
+      - name: Debug Build
+        uses: stateful/vscode-server-action@v1
+        if: failure()
