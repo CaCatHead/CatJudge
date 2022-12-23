@@ -49,7 +49,8 @@ int RF_C[512] =
     SYS_uname,          -1,
     SYS_write,          -1,
     SYS_writev,         -1,
-  201,				-1,
+    SYS_set_tid_address,-1,
+    SYS_time,    		-1,
     -1
 };
 
@@ -73,7 +74,8 @@ int RF_CPP[512] =
     SYS_uname,          -1,
     SYS_write,          -1,
     SYS_writev,         -1,
-  201,				-1,
+    SYS_set_tid_address,-1,
+    SYS_time,    		-1,
     -1
 };
 
@@ -97,6 +99,7 @@ int RF_PASCAL[512] =
     SYS_uname,          -1,
     SYS_write,          -1,
     SYS_writev,         -1,
+    SYS_set_tid_address,-1,
     -1
 };
 
@@ -163,6 +166,7 @@ int RF_C[512] =
         SYS_uname, -1,
         SYS_write, -1,
         SYS_writev, -1,
+        SYS_set_tid_address,-1,
         SYS_time, -1,
         SYS_readlink, -1,
         -1
@@ -189,6 +193,7 @@ int RF_CPP[512] =
         SYS_uname, -1,
         SYS_write, -1,
         SYS_writev, -1,
+        SYS_set_tid_address,-1,
         SYS_time, -1,
         SYS_readlink, -1, //原本ubuntu 12.04不需要这一条
         -1
