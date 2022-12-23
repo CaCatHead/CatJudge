@@ -1,5 +1,5 @@
 #include <pwd.h>
-#include <errno.h>
+#include <cerrno>
 #include <unistd.h>
 
 #include <sys/reg.h>
@@ -37,12 +37,12 @@ static void timeout(int sig) {
  * 设置时间限制
  */
 static int malarm(int which, int milliseconds) {
-  struct itimerval t;
+  struct itimerval t {};
   t.it_value.tv_sec = milliseconds / 1000;
   t.it_value.tv_usec = milliseconds % 1000 * 1000; //微秒
   t.it_interval.tv_sec = 0;
   t.it_interval.tv_usec = 0;
-  return setitimer(which, &t, NULL);
+  return setitimer(which, &t, nullptr);
 }
 
 /*
@@ -58,7 +58,7 @@ static void redirect_io(std::string in, std::string out, std::string err) {
   stdout = freopen(out.c_str(), "w", stdout);
   stderr = freopen(err.c_str(), "w", stderr);
 
-  if (stdin == NULL || stdout == NULL) {
+  if (stdin == nullptr || stdout == nullptr) {
     FM_LOG_WARNING("It occurred an error when freopen: stdin(%p) stdout(%p)", stdin, stdout);
     exit(EXIT::PRE_JUDGE);
   }
@@ -71,7 +71,7 @@ static void redirect_io(std::string in, std::string out, std::string err) {
  * CPU时间、堆栈、输出文件大小等
  */
 static void set_limit(Context *ctx) {
-  rlimit lim;
+  rlimit lim {};
 
   lim.rlim_max = (ctx->time_limit - ctx->result->time + 999) / 1000 + 1;//硬限制
   lim.rlim_cur = lim.rlim_max; //软限制
@@ -128,7 +128,7 @@ static void set_limit(Context *ctx) {
 static void security_control(Context *ctx) {
   struct passwd *nobody = getpwnam("nobody");
 
-  if (nobody == NULL) {
+  if (nobody == nullptr) {
     FM_LOG_WARNING("Well, where is nobody? I cannot live without him. %d: %s", errno, strerror(errno));
     exit(EXIT::SET_SECURITY);
   }
@@ -141,7 +141,7 @@ static void security_control(Context *ctx) {
 
   static char cwd[1024];
   char *tmp = getcwd(cwd, 1024);
-  if (tmp == NULL) {
+  if (tmp == nullptr) {
     FM_LOG_WARNING("Oh, where i am now? I cannot getcwd. %d: %s", errno, strerror(errno));
     exit(EXIT::SET_SECURITY);
   }
@@ -163,12 +163,11 @@ static void security_control(Context *ctx) {
 }
 
 /*
- * 对 SpecialJudge 程序的安全性控制
- * 毕竟不是自己写的代码，得防着点
+ * 对 SpecialJudge 程序的安全性控制, 毕竟不是自己写的代码，得防着点
  */
 static void security_control_checker(Context *ctx) {
   struct passwd *nobody = getpwnam("nobody");
-  if (nobody == NULL) {
+  if (nobody == nullptr) {
     FM_LOG_WARNING("Well, where is nobody? I cannot live without him. %d: %s", errno, strerror(errno));
     exit(EXIT::SET_SECURITY);
   }
@@ -180,7 +179,7 @@ static void security_control_checker(Context *ctx) {
 
   static char cwd[1024];
   char *tmp = getcwd(cwd, 1024);
-  if (tmp == NULL) {
+  if (tmp == nullptr) {
     FM_LOG_WARNING("Oh, where i am now? I cannot getcwd. %d: %s", errno, strerror(errno));
     exit(EXIT::SET_SECURITY);
   }
@@ -203,10 +202,10 @@ static void security_control_checker(Context *ctx) {
  * 执行用户提交的程序
  */
 static Result *run(Context *ctx) {
-  struct Result *result = new Result();
+  auto *result = new Result();
   ctx->result = result;
 
-  struct rusage rused;
+  struct rusage rused {};
 
   pid_t executive = fork();
 
@@ -247,13 +246,13 @@ static Result *run(Context *ctx) {
     // 走到这了说明出错了
     exit(EXIT::PRE_JUDGE_EXECLP);
   } else {
-    int init_mem = -1;
+    long int init_mem = -1;
 
     // 父进程
     int status = 0;  // 子进程状态
     int syscall_id = 0; // 系统调用号
 
-    struct user_regs_struct regs; // 寄存器
+    struct user_regs_struct regs {}; // 寄存器
 
     init_RF_table(ctx->language); // 初始化系统调用表
 
@@ -270,6 +269,15 @@ static Result *run(Context *ctx) {
         if (init_mem < 0) {
           init_mem = 0;
         }
+      }
+
+      // MLE, using ru_maxrss (since Linux 2.6.32)
+      result->memory = std::max((long int) result->memory, rused.ru_maxrss - init_mem);
+      if (result->verdict == Verdict::SE && result->memory > ctx->memory_limit) {
+        result->verdict = Verdict::MLE;
+        FM_LOG_TRACE("Memory Limit Exceeded (%d KB)", result->memory);
+        ptrace(PTRACE_KILL, executive, NULL, NULL);
+        break;
       }
 
       // 自行退出
@@ -322,18 +330,6 @@ static Result *run(Context *ctx) {
             break;
         }
 
-        ptrace(PTRACE_KILL, executive, NULL, NULL);
-        break;
-      }
-
-      // MLE
-      // ru_maxrss (since Linux 2.6.32)
-      result->memory = std::max((long int) result->memory, rused.ru_maxrss - init_mem);
-      // result->memory = std::max((long int) result->memory, rused.ru_minflt * (getpagesize() / CONF::KILO));
-
-      if (result->verdict == Verdict::SE && result->memory > ctx->memory_limit) {
-        result->verdict = Verdict::MLE;
-        FM_LOG_TRACE("Memory Limit Exceeded (%d KB)", result->memory);
         ptrace(PTRACE_KILL, executive, NULL, NULL);
         break;
       }
@@ -428,7 +424,7 @@ static Result *check(Context *ctx) {
 
     exit(EXIT::COMPARE_SPJ_FORK);
   } else {
-    if (wait4(spj_pid, &status, 0, NULL) < 0) {
+    if (wait4(spj_pid, &status, 0, nullptr) < 0) {
       FM_LOG_WARNING("spj wait4 failed.");
       exit(EXIT::COMPARE_SPJ);
     }

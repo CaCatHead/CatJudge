@@ -12,14 +12,14 @@ struct Result {
   CONF::Verdict verdict = CONF::Verdict::SE;
 
   /**
-   * 内存使用量, 单位: ?
+   * 内存使用量, 单位: KB
    */
-  int memory = 0;
+  long int memory = 0;
 
   /**
-   * 时间使用量, 单位: ?
+   * 时间使用量, 单位: ms
    */
-  int time = 0;
+  long int time = 0;
 
   /**
    * 额外信息

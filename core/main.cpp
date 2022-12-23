@@ -54,13 +54,13 @@ static void output_result() {
   }
 
   fprintf(result_file, "%s\n", status.c_str());
-  fprintf(result_file, "%d\n", global_context->result->time);
-  fprintf(result_file, "%d\n", global_context->result->memory);
+  fprintf(result_file, "%ld\n", global_context->result->time);
+  fprintf(result_file, "%ld\n", global_context->result->memory);
 //  fprintf(result_file, "%s\n", PROBLEM::extra_message.c_str());
 
   FM_LOG_TRACE("Verdict: %s", status.c_str());
-  FM_LOG_TRACE("Time   : %d ms", global_context->result->time);
-  FM_LOG_TRACE("Memory : %d KB", global_context->result->memory);
+  FM_LOG_TRACE("Time   : %ld ms", global_context->result->time);
+  FM_LOG_TRACE("Memory : %ld KB", global_context->result->memory);
 }
 
 static void print_help_message() {
