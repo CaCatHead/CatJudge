@@ -51,6 +51,8 @@ int RF_C[512] =
     SYS_writev,         -1,
     SYS_set_tid_address,-1,
     SYS_time,    		-1,
+    SYS_set_robust_list,-1,
+    SYS_get_robust_list,-1,
     -1
 };
 
@@ -76,6 +78,8 @@ int RF_CPP[512] =
     SYS_writev,         -1,
     SYS_set_tid_address,-1,
     SYS_time,    		-1,
+    SYS_set_robust_list,-1,
+    SYS_get_robust_list,-1,
     -1
 };
 
@@ -100,6 +104,8 @@ int RF_PASCAL[512] =
     SYS_write,          -1,
     SYS_writev,         -1,
     SYS_set_tid_address,-1,
+    SYS_set_robust_list,-1,
+    SYS_get_robust_list,-1,
     -1
 };
 
@@ -135,6 +141,7 @@ int RF_JAVA[512] =
     SYS_rt_sigaction,   -1,
     SYS_rt_sigprocmask, -1,
     SYS_set_robust_list,-1,
+    SYS_get_robust_list,-1,
     SYS_set_thread_area,-1,
     SYS_set_tid_address,-1,
     SYS_sigprocmask,    -1,
@@ -169,6 +176,8 @@ int RF_C[512] =
         SYS_set_tid_address,-1,
         SYS_time, -1,
         SYS_readlink, -1,
+        SYS_set_robust_list, -1,
+        SYS_get_robust_list, -1,
         -1
     };
 
@@ -196,6 +205,8 @@ int RF_CPP[512] =
         SYS_set_tid_address,-1,
         SYS_time, -1,
         SYS_readlink, -1, //原本ubuntu 12.04不需要这一条
+        SYS_set_robust_list, -1,
+        SYS_get_robust_list, -1,
         -1
     };
 
@@ -230,8 +241,10 @@ int RF_JAVA[512] =
         SYS_rt_sigaction, -1,
         SYS_rt_sigprocmask, -1,
         SYS_set_robust_list, -1,
+        SYS_get_robust_list, -1,
         SYS_set_tid_address, -1,
         SYS_stat, -1,
+        SYS_newfstatat, -1,
         SYS_uname, -1,
         SYS_write, -1,
         SYS_writev, -1,
