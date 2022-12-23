@@ -49,7 +49,7 @@ static int malarm(int which, int milliseconds) {
  * 输入输出重定向
  */
 static void redirect_io(std::string in, std::string out, std::string err) {
-  FM_LOG_TRACE("Start redirecting IO.");
+  FM_LOG_DEBUG("Start redirecting IO");
 
   // 答案文件权限控制
   chmod(out.c_str(), S_IRUSR | S_IWUSR);
@@ -63,7 +63,7 @@ static void redirect_io(std::string in, std::string out, std::string err) {
     exit(EXIT::PRE_JUDGE);
   }
 
-  FM_LOG_TRACE("Redirecting IO is OK.");
+  FM_LOG_DEBUG("Redirecting IO is OK");
 }
 
 /*
@@ -214,7 +214,7 @@ static Result *run(Context *ctx) {
     exit(EXIT::PRE_JUDGE);
   } else if (executive == 0) {
     // 子进程: 用户程序
-    FM_LOG_TRACE("Start Judging.");
+    FM_LOG_DEBUG("Fork child process");
 
     redirect_io(ctx->input_file(), ctx->output_file(), ctx->error_file());
 
@@ -231,6 +231,7 @@ static Result *run(Context *ctx) {
       exit(EXIT::PRE_JUDGE_PTRACE);
     }
 
+    FM_LOG_TRACE("Start running user submission");
     if (ctx->language == Language::C || ctx->language == Language::CPP) {
       int err = execl("./a.out", "a.out", NULL);
       if (err == -1) {
@@ -368,6 +369,8 @@ static Result *run(Context *ctx) {
       }
     }
   }
+
+  FM_LOG_TRACE("Running user submission is OK");
 
   // 这儿关于time_usage和memory_usage计算的有点混乱
   // 主要是为了减轻 web 的任务

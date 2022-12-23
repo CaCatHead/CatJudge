@@ -170,6 +170,7 @@ int main(int argc, char *argv[]) {
     exit(CONF::EXIT::UNPRIVILEGED);
   }
 
+  FM_LOG_TRACE("Start judging");
   judge(ctx);
 
   return CONF::EXIT::OK;
