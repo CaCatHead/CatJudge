@@ -42,7 +42,12 @@ def run(executable, checker, source, testcase, expected):
     os.chmod(os.path.join(__dir__, "testcase", testcase + '.in'), stat.S_IRWXU)
     os.chmod(os.path.join(__dir__, "testcase", testcase + '.ans'), stat.S_IRWXU)
 
+    is_c_cpp = source.endswith('.c') or source.endswith('.cpp')
     commands = [executable, "-d", tmp_dir, "-l", source.split('.')[-1], "-s", checker]
+    if is_c_cpp:
+        # Restrict c/cpp memory usage
+        commands += ["-m", str(4 * 1024)]
+        
     code = subprocess.call(commands, cwd=os.path.dirname(executable))
 
     def read_verdict():
@@ -53,6 +58,7 @@ def run(executable, checker, source, testcase, expected):
     shutil.rmtree(tmp_dir)
 
     if code != 0:
+        print("Something went wrong when running catj")
         return False
 
     if verdict == expected:
