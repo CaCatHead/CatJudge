@@ -372,15 +372,16 @@ static Result *run(Context *ctx) {
 
   FM_LOG_TRACE("Running user submission is OK");
 
-  // 这儿关于time_usage和memory_usage计算的有点混乱
-  // 主要是为了减轻 web 的任务
-  // 只要不是 AC，就把 time_usage 和 memory_usage 归 0
   result->time = 0;
   result->time += (rused.ru_utime.tv_sec * 1000 + rused.ru_utime.tv_usec / 1000);
   result->time += (rused.ru_stime.tv_sec * 1000 + rused.ru_stime.tv_usec / 1000);
 
-  if (result->verdict == Verdict::SE && result->time > ctx->time_limit) {
-    result->verdict = Verdict::TLE;
+  if (result->verdict == Verdict::SE) {
+    if (result->time > ctx->time_limit) {
+      result->verdict = Verdict::TLE;
+    } else if (result->memory > ctx->memory_limit) {
+      result->verdict = Verdict::MLE;
+    }
   }
 
   return result;

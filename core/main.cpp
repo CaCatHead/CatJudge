@@ -134,9 +134,9 @@ Context *parse_cli_args(int argc, char *argv[]) {
 
   FM_LOG_DEBUG("Run dir     : %s", ctx->run_dir);
   FM_LOG_TRACE("Language    : %s (%d)", CONF::LanguageStr[ctx->language], ctx->language);
-  FM_LOG_TRACE("Time limit  : %d", ctx->time_limit);
-  FM_LOG_TRACE("Memory limit: %d", ctx->memory_limit);
-  FM_LOG_TRACE("Output limit: %d", ctx->output_limit);
+  FM_LOG_TRACE("Time limit  : %d ms", ctx->time_limit);
+  FM_LOG_TRACE("Memory limit: %d KB", ctx->memory_limit);
+  FM_LOG_TRACE("Output limit: %d KB", ctx->output_limit);
   FM_LOG_TRACE("Checker     : %s", ctx->checker);
 
   return ctx;
