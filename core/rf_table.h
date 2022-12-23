@@ -178,6 +178,7 @@ int RF_C[512] =
         SYS_readlink, -1,
         SYS_set_robust_list, -1,
         SYS_get_robust_list, -1,
+        318, -1 // what's this?
         334, -1 // what's this?
         -1
     };
@@ -205,9 +206,10 @@ int RF_CPP[512] =
         SYS_writev, -1,
         SYS_set_tid_address,-1,
         SYS_time, -1,
-        SYS_readlink, -1, //原本ubuntu 12.04不需要这一条
+        SYS_readlink, -1, // 原本ubuntu 12.04不需要这一条
         SYS_set_robust_list, -1,
         SYS_get_robust_list, -1,
+        318, -1 // what's this?
         334, -1 // what's this?
         -1
     };
@@ -253,7 +255,6 @@ int RF_JAVA[512] =
         SYS_time, -1,
         SYS_readlink, -1,
         SYS_prlimit64, -1,
-        334, -1 // what's this?
         -1
     };
 #endif
