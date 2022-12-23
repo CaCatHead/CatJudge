@@ -287,13 +287,13 @@ static Result *run(Context *ctx) {
       // 被信号终止掉了
       // 要过滤掉 SIGTRAP 信号
       if (WIFSIGNALED(status) || (WIFSTOPPED(status) && WSTOPSIG(status) != SIGTRAP)) {
-        int sig = 0;
+        int sig;
         if (WIFSIGNALED(status)) {
           sig = WTERMSIG(status);
-          FM_LOG_WARNING("child signaled by %d : %s", sig, strsignal(sig));
+          FM_LOG_WARNING("Child is signaled by %d : %s", sig, strsignal(sig));
         } else {
           sig = WSTOPSIG(status);
-          FM_LOG_WARNING("child stop by %d : %s", sig, strsignal(sig));
+          FM_LOG_WARNING("Child is stopped by %d : %s", sig, strsignal(sig));
         }
 
         switch (sig) {
