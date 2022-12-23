@@ -102,13 +102,14 @@ int log_open(const char *filename) {
   atexit(log_close);
   log_opened = 1;
   log_extra_info[0] = 0;
-  FM_LOG_NOTICE("Open log file \"%s\"", filename);
+  FM_LOG_NOTICE("--------------------------------------");
+  FM_LOG_NOTICE("Open log file: \"%s\"", filename);
   return 1;
 }
 
 void log_close() {
   if (log_opened) {
-    FM_LOG_TRACE("Close log file");
+    FM_LOG_NOTICE("Close log file");
     fclose(log_fp);
     free(log_filename);
     log_fp = nullptr;
@@ -140,7 +141,6 @@ static void log_write(int level, const char *file,
                           "%s [%s] [%11s:%3d]%s %s\n",
                           LOG_LEVEL_NOTE[level], datetime, basename(file), line, log_extra_info, log_buffer);
   int log_fd = log_fp->_fileno;
-  //puts(buffer);
   if (flock(log_fd, LOCK_EX) == 0) {
     if (write(log_fd, buffer, count) < 0) {
       perror("write error");
