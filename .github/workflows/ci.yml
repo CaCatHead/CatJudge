@@ -19,7 +19,7 @@ jobs:
       - name: Checkout testlib
         run: |
           git submodule update --init --recursive
-      
+
       - name: Get latest CMake and ninja
         uses: lukka/get-cmake@latest
 
@@ -37,7 +37,10 @@ jobs:
         run: |
           cd ./build
           sudo ctest --verbose
-          echo '----------'
+
+      - name: Print Log
+        if: failure()
+        run: |
           ls *.log | xargs cat
 
       - name: Debug Build
