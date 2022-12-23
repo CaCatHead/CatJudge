@@ -102,13 +102,13 @@ int log_open(const char *filename) {
   atexit(log_close);
   log_opened = 1;
   log_extra_info[0] = 0;
-  FM_LOG_NOTICE("log_open");
+  FM_LOG_NOTICE("Open log file \"%s\"", filename);
   return 1;
 }
 
 void log_close() {
   if (log_opened) {
-    FM_LOG_TRACE("log_close");
+    FM_LOG_TRACE("Close log file");
     fclose(log_fp);
     free(log_filename);
     log_fp = NULL;
@@ -120,7 +120,7 @@ void log_close() {
 static void log_write(int level, const char *file,
                       const int line, const char *fmt, ...) {
   if (log_opened == 0) {
-    fprintf(stderr, "log_open not called yet\n");
+    fprintf(stderr, "You should open the log file before writing logs\n");
     exit(1);
   }
   static char buffer[log_buffer_size];
