@@ -178,6 +178,7 @@ int RF_C[512] =
         SYS_readlink, -1,
         SYS_set_robust_list, -1,
         SYS_get_robust_list, -1,
+        SYS_prlimit64, -1,
         SYS_userfaultfd, -1,
         318, -1, // what's this?
         334, -1, // what's this?
@@ -210,6 +211,7 @@ int RF_CPP[512] =
         SYS_readlink, -1, // 原本ubuntu 12.04不需要这一条
         SYS_set_robust_list, -1,
         SYS_get_robust_list, -1,
+        SYS_prlimit64, -1,
         SYS_userfaultfd, -1,
         318, -1, // what's this?
         334, -1, // what's this?
