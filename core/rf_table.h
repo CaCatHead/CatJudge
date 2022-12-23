@@ -262,6 +262,8 @@ int RF_JAVA[512] =
         SYS_readlink, -1,
         SYS_prlimit64, -1,
         SYS_userfaultfd, -1,
+        318, -1, // what's this?
+        334, -1, // what's this?
         -1
     };
 #endif
