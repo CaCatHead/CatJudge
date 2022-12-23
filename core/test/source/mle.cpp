@@ -9,7 +9,7 @@ int n, a[maxn];
 
 int main() {
   cin >> n >> a[1];
-  for (int i = 2; i < maxn; i++) a[i] = a[i - 1] * 2 % mod;
+  for (int i = 2; i <= 100000000; i++) a[i] = a[i - 1] * 2 % mod;
   cout << a[maxn - 1] << '\n';
   return 0;
 }
