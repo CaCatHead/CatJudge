@@ -41,7 +41,7 @@ jobs:
       - name: Print Log
         if: failure()
         run: |
-          ls *.log | xargs cat
+          cat build/*.log
 
       - name: Debug Build
         uses: stateful/vscode-server-action@v1
