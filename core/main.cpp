@@ -68,10 +68,10 @@ static void print_help_message() {
   puts("");
   puts("Options:");
   puts("  -d <dir>       Run directory");
-  puts("  -l <language>  Code Language");
+  puts("  -s <checker>   Checker path");
+  puts("  -l <language>  Code language (c / cpp / java)");
   puts("  -t <time>      Time limit (unit: ms)");
   puts("  -m <memory>    Memory limit (unit: KB)");
-  puts("  -s <checker>   Checker path");
   exit(CONF::EXIT::HELP);
 }
 
