@@ -106,10 +106,10 @@ static void set_limit(Context *ctx) {
     }
   }
 
-#ifndef __DEBUG__
-  // Release build: 关闭 log, 防止 log 造成 OLE
-  log_close();
-#endif
+//#ifndef __DEBUG__
+//  // Release build: 关闭 log, 防止 log 造成 OLE
+//  log_close();
+//#endif
 
   // 输出文件大小限制
   lim.rlim_max = ctx->output_limit * CONF::KILO;
