@@ -404,7 +404,7 @@ static Result *check(Context *ctx) {
 #endif
 
     // SPJ 时间限制
-    if (EXIT_SUCCESS != malarm(ITIMER_REAL, ctx->time_limit * 2 + 1)) {
+    if (EXIT_SUCCESS != malarm(ITIMER_REAL, ctx->time_limit * 2 + CONF::JUDGE_TIME_LIMIT)) {
       FM_LOG_WARNING("Set time limit for spj failed.");
       exit(EXIT::COMPARE_SPJ);
     }
@@ -455,7 +455,8 @@ static Result *check(Context *ctx) {
 }
 
 Result *judge(Context *ctx) {
-  if (EXIT_SUCCESS != malarm(ITIMER_REAL, ctx->time_limit + CONF::JUDGE_TIME_LIMIT)) {
+  // 定时器设置两倍时间限制，加上评测时限
+  if (EXIT_SUCCESS != malarm(ITIMER_REAL, 2 * ctx->time_limit + CONF::JUDGE_TIME_LIMIT)) {
     FM_LOG_WARNING("Set the alarm for this judge program failed, %d: %s", errno, strerror(errno));
     exit(EXIT::VERY_FIRST);
   }
