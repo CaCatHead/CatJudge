@@ -219,7 +219,8 @@ static Result *run(Context *ctx) {
 
     security_control(ctx);
 
-    int real_time_limit = ctx->time_limit + 1;
+    // 定时器设置两倍时间限制，加上评测时限
+    int real_time_limit = 2 * ctx->time_limit + CONF::JUDGE_TIME_LIMIT;
     if (EXIT_SUCCESS != malarm(ITIMER_REAL, real_time_limit)) {
       exit(EXIT::PRE_JUDGE);
     }
