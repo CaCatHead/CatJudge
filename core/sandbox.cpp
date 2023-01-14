@@ -70,7 +70,7 @@ static void redirect_io(std::string in, std::string out, std::string err) {
 /*
  * 输出重定向
  */
-static void redirect_io( std::string out, std::string err) {
+static void redirect_io(std::string out, std::string err) {
   FM_LOG_DEBUG("Start redirecting stdout and stderr");
 
   // 输出文件权限控制
@@ -86,6 +86,18 @@ static void redirect_io( std::string out, std::string err) {
   }
 
   FM_LOG_DEBUG("Redirecting IO is OK");
+}
+
+static const size_t MAX_BUFFER_SIZE = 1024;
+static char buffer[MAX_BUFFER_SIZE + 4];
+
+static std::string read_text(std::string path) {
+  FILE* fp = fopen(path.c_str(), "r");
+  if (!fp) {
+    return std::string();
+  }
+  size_t ok = fread(&buffer, MAX_BUFFER_SIZE, 1, fp);
+  return std::string(buffer);
 }
 
 /*
@@ -483,6 +495,8 @@ static Result *check(Context *ctx) {
   ctx->result->checker_time = 0;
   ctx->result->checker_time += (rused.ru_utime.tv_sec * 1000 + rused.ru_utime.tv_usec / 1000);
   ctx->result->checker_time += (rused.ru_stime.tv_sec * 1000 + rused.ru_stime.tv_usec / 1000);
+
+  ctx->result->checker_message = read_text(ctx->checker_error_file());
 
   return ctx->result;
 }
