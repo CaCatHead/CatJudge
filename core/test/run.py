@@ -37,10 +37,10 @@ def run(executable, checker, source, testcase, expected):
         shutil.rmtree(tmp_dir)
         return False
 
-    shutil.copy(os.path.join(__dir__, "testcase", testcase + '.in'), os.path.join(tmp_dir, 'in.in'))
-    shutil.copy(os.path.join(__dir__, "testcase", testcase + '.ans'), os.path.join(tmp_dir, 'out.out'))
     os.chmod(os.path.join(__dir__, "testcase", testcase + '.in'), stat.S_IRWXU)
     os.chmod(os.path.join(__dir__, "testcase", testcase + '.ans'), stat.S_IRWXU)
+    shutil.copy(os.path.join(__dir__, "testcase", testcase + '.in'), os.path.join(tmp_dir, 'in.txt'))
+    shutil.copy(os.path.join(__dir__, "testcase", testcase + '.ans'), os.path.join(tmp_dir, 'ans.txt'))
 
     is_c_cpp = source.endswith('.c') or source.endswith('.cpp')
     commands = [executable, "-d", tmp_dir, "-l", source.split('.')[-1], "-s", checker]

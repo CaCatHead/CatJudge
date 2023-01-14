@@ -88,7 +88,7 @@ struct Context {
   }
 
   std::string input_file() const {
-    return std::string(this->run_dir) + "/in.in";
+    return std::string(this->run_dir) + "/in.txt";
   }
 
   std::string result_file() const {
@@ -96,23 +96,23 @@ struct Context {
   }
 
   std::string output_file() const {
-    return std::string(this->run_dir) + "/out.txt";
+    return std::string(this->run_dir) + "/sub.out";
   }
 
   std::string answer_file() const {
-    return std::string(this->run_dir) + "/out.out";
+    return std::string(this->run_dir) + "/ans.txt";
   }
 
   std::string error_file() const {
-    return std::string(this->run_dir) + "/err.txt";
+    return std::string(this->run_dir) + "/sub.err";
   }
 
   std::string checker_output_file() const {
-    return std::string(this->run_dir) + "/checker.out";
+    return std::string(this->run_dir) + "/chk.out";
   }
 
   std::string checker_error_file() const {
-    return std::string(this->run_dir) + "/checker.err";
+    return std::string(this->run_dir) + "/chk.err";
   }
 };
 

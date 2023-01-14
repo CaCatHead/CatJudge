@@ -76,8 +76,8 @@ Run the C++ program at the run directory `./test`, using at most 1000 ms time an
 Before running this judge sandbox program, you should prepare the run directory with the following files.
 
 + A compiled program `a.out` (for `c` and `cpp`) or `Main.java` (for `java`).
-+ Testcase input file: `in.in`.
-+ Testcase answer file: `out.out`.
++ Testcase input file: `in.txt`.
++ Testcase answer file: `ans.txt`.
 
 An example client is located at `./core/test/run.py` used for unit test.
 
