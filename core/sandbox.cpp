@@ -51,14 +51,36 @@ static int malarm(int which, int milliseconds) {
 static void redirect_io(std::string in, std::string out, std::string err) {
   FM_LOG_DEBUG("Start redirecting IO");
 
-  // 答案文件权限控制
+  // 输出文件权限控制
   chmod(out.c_str(), S_IRUSR | S_IWUSR);
+  chmod(err.c_str(), S_IRUSR | S_IWUSR);
 
   stdin = freopen(in.c_str(), "r", stdin);
   stdout = freopen(out.c_str(), "w", stdout);
   stderr = freopen(err.c_str(), "w", stderr);
 
   if (stdin == nullptr || stdout == nullptr) {
+    FM_LOG_WARNING("It occurred an error when freopen: stdin(%p) stdout(%p)", stdin, stdout);
+    exit(EXIT::PRE_JUDGE);
+  }
+
+  FM_LOG_DEBUG("Redirecting IO is OK");
+}
+
+/*
+ * 输出重定向
+ */
+static void redirect_io( std::string out, std::string err) {
+  FM_LOG_DEBUG("Start redirecting stdout and stderr");
+
+  // 输出文件权限控制
+  chmod(out.c_str(), S_IRUSR | S_IWUSR);
+  chmod(err.c_str(), S_IRUSR | S_IWUSR);
+
+  stdout = freopen(out.c_str(), "w", stdout);
+  stderr = freopen(err.c_str(), "w", stderr);
+
+  if (stdout == nullptr || stderr == nullptr) {
     FM_LOG_WARNING("It occurred an error when freopen: stdin(%p) stdout(%p)", stdin, stdout);
     exit(EXIT::PRE_JUDGE);
   }
@@ -411,6 +433,8 @@ static Result *check(Context *ctx) {
       FM_LOG_WARNING("Set time limit for spj failed.");
       exit(EXIT::COMPARE_SPJ);
     }
+
+    redirect_io(ctx->checker_output_file(), ctx->checker_error_file());
 
     security_control_checker(ctx);
 
