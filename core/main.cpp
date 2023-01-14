@@ -81,6 +81,9 @@ static void print_help_message() {
 
 static void print_version_message() {
   printf("catjudge/%s\n", CATJUDGE_VERSION);
+//  printf("\n");
+//  printf("Checker Root     %s\n", CHECKER_ROOT);
+//  printf("Default Checker  %s\n", DEFAULT_CHECKER);
   exit(CONF::EXIT::HELP);
 }
 

@@ -450,9 +450,10 @@ static Result *check(Context *ctx) {
 
     security_control_checker(ctx);
 
+    std::string checker_path = std::string(CHECKER_ROOT) + "/" + ctx->checker_name();
     // Only support executing binary
     int err = execl(
-        ctx->checker,
+        checker_path.c_str(),
         ctx->checker_name().c_str(),
         ctx->input_file().c_str(),
         ctx->output_file().c_str(),

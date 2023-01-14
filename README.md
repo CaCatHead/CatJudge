@@ -12,19 +12,25 @@ A simple sandbox program used for competitive programming contest migrated from 
 >
 > Install latest [cmake](https://cmake.org/) and C/C++ compiler ([gcc](https://gcc.gnu.org/) or [clang](https://clang.llvm.org/)).
 > 
-> Install [python 2/3](https://www.python.org/) and Java 8 for running testcases.
+> Install [python 2/3](https://www.python.org/) and [Java 8](https://www.oracle.com/java/technologies/java8.html) for running testcases.
 
-Before building this project, you should first modify `CMakeLists.txt` to config the location of the default checker (the original version embedds the text diff checker, since we should not bring break changes).
+Before building this project, you should config the directory of the checkers and the default checker.
 
 We recommend you use the checker [lcmp](https://github.com/MikeMirzayanov/testlib/blob/7fd543d7e6ae36a04bb382c5ebb4eee254362c6a/checkers/lcmp.cpp) (It diffs the content of each line, and ignores extra whitespaces).
 
-```cmake
-# CMakeLists.txt
-set(DEFAULT_CHECKER <the absolute path of your default checker>)
+```bash
+# We use the checker build output directory as the checker directory
+$ export CHECKER_ROOT="$(pwd)/build"
 
-# For example:
-# set(DEFAULT_CHECKER /usr/bin/lcmp)
+# We use lcmp as the default checker 
+$ export DEFAULT_CHECKER="lcmp"
 ```
+
+> **Notification** 
+>
+> The original version embedds the text diff checker, since we did not bring break changes before v0.3.0.
+>
+> Since v0.3.0, CatJudge is not compatible with Cat.
 
 Then, follow these commands.
 
@@ -66,10 +72,10 @@ Command line options:
 Example:
 
 ```bash
-$ sudo ./build/main  -d ./test -l cpp -t 1000 -m 65535 -s ./build/lcmp
+$ sudo ./build/main  -d ./test -l cpp -t 1000 -m 65535 -s lcmp
 ```
 
-Run the C++ program at the run directory `./test`, using at most 1000 ms time and at most 65536 KB memory, and the checker is located at `./build/lcmp`.
+Run the C++ program at the run directory `./test`, using at most 1000 ms time and at most 65536 KB memory, and the checker is `lcmp` in the checker directory.
 
 ### Conventions
 
@@ -80,8 +86,6 @@ Before running this judge sandbox program, you should prepare the run directory 
 + Testcase answer file: `ans.txt`.
 
 An example client is located at `./core/test/run.py` used for unit test.
-
-> Since v0.3.0, CatJudge is not compatible with Cat.
 
 ### Checker
 

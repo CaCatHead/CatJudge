@@ -7,7 +7,8 @@ if (${IS_DEBUG})
 endif ()
 
 set(LOG_PATH .)
-set(DEFAULT_CHECKER ${CMAKE_CURRENT_BINARY_DIR}/lcmp)
+set(DEFAULT_CHECKER lcmp)
+set(CHECKER_ROOT ${CMAKE_CURRENT_BINARY_DIR})
 
 if (DEFINED ENV{LOG_PATH})
     set(LOG_PATH $ENV{LOG_PATH})
@@ -15,11 +16,15 @@ endif ()
 if (DEFINED ENV{DEFAULT_CHECKER})
     set(DEFAULT_CHECKER $ENV{DEFAULT_CHECKER})
 endif ()
+if (DEFINED ENV{CHECKER_ROOT})
+    set(CHECKER_ROOT $ENV{CHECKER_ROOT})
+endif ()
 
 add_definitions(
         -DCATJUDGE_VERSION=\"${CMAKE_PROJECT_VERSION}\"
         -DLOG_PATH=\"${LOG_PATH}\"
-        -DDEFAULT_CHECKER=\"${DEFAULT_CHECKER}\")
+        -DDEFAULT_CHECKER=\"${DEFAULT_CHECKER}\"
+        -DCHECKER_ROOT=\"${CHECKER_ROOT}\")
 
 add_executable(main core/main.cpp)
 
