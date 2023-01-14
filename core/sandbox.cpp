@@ -385,6 +385,8 @@ static Result *run(Context *ctx) {
 }
 
 static Result *check(Context *ctx) {
+  struct rusage rused {};
+
   pid_t spj_pid = fork();
   int status = 0;
 
@@ -405,7 +407,7 @@ static Result *check(Context *ctx) {
 #endif
 
     // SPJ 时间限制
-    if (EXIT_SUCCESS != malarm(ITIMER_REAL, ctx->time_limit * 2 + CONF::JUDGE_TIME_LIMIT)) {
+    if (EXIT_SUCCESS != malarm(ITIMER_REAL, ctx->time_limit * 2)) {
       FM_LOG_WARNING("Set time limit for spj failed.");
       exit(EXIT::COMPARE_SPJ);
     }
@@ -425,10 +427,12 @@ static Result *check(Context *ctx) {
 
     exit(EXIT::COMPARE_SPJ_FORK);
   } else {
-    if (wait4(spj_pid, &status, 0, nullptr) < 0) {
+    if (wait4(spj_pid, &status, 0, &rused) < 0) {
       FM_LOG_WARNING("spj wait4 failed.");
       exit(EXIT::COMPARE_SPJ);
     }
+
+    ctx->result->checker_memory = std::max((long int) ctx->result->checker_memory, rused.ru_maxrss);
 
     FM_LOG_DEBUG("Checker return code: %d", status);
 
@@ -451,6 +455,10 @@ static Result *check(Context *ctx) {
       FM_LOG_WARNING("Actually, I do not know why the special judge program dead.");
     }
   }
+
+  ctx->result->checker_time = 0;
+  ctx->result->checker_time += (rused.ru_utime.tv_sec * 1000 + rused.ru_utime.tv_usec / 1000);
+  ctx->result->checker_time += (rused.ru_stime.tv_sec * 1000 + rused.ru_stime.tv_usec / 1000);
 
   return ctx->result;
 }

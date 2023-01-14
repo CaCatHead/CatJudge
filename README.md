@@ -81,6 +81,8 @@ Before running this judge sandbox program, you should prepare the run directory 
 
 An example client is located at `./core/test/run.py` used for unit test.
 
+> Since v0.3.0, CatJudge is not compatible with Cat.
+
 ### Checker
 
 You should follow the conventions of testlib checker. More details see [MikeMirzayanov/testlib](https://github.com/MikeMirzayanov/testlib/tree/7fd543d7e6ae36a04bb382c5ebb4eee254362c6a#checker), [Checker - OI Wiki](https://oi-wiki.org/tools/testlib/checker/), and some common examples at [testlib/checkers](https://github.com/MikeMirzayanov/testlib/tree/7fd543d7e6ae36a04bb382c5ebb4eee254362c6a/checkers).

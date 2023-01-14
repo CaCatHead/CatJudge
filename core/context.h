@@ -16,10 +16,14 @@ struct Result {
    */
   long int memory = 0;
 
+  long int checker_memory = 0;
+
   /**
    * 时间使用量, 单位: ms
    */
   long int time = 0;
+
+  long int checker_time = 0;
 
   /**
    * 额外信息

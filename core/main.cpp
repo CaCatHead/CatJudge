@@ -25,42 +25,46 @@ static void output_result() {
   std::string status;
   switch (global_context->result->verdict) {
     case Verdict::CE:
-      status = "Compile Error";
+      status = "CompileError";
       break;
     case Verdict::TLE:
-      status = "Time Limit Exceeded";
+      status = "TimeLimitExceeded";
       break;
     case Verdict::MLE:
-      status = "Memory Limit Exceeded";
+      status = "MemoryLimitExceeded";
       break;
     case Verdict::OLE:
-      status = "Output Limit Exceeded";
+      status = "OutputLimitExceeded";
       break;
     case Verdict::RE:
-      status = "Runtime Error";
+      status = "RuntimeError";
       break;
     case Verdict::WA:
-      status = "Wrong Answer";
+      status = "WrongAnswer";
       break;
     case Verdict::AC:
       status = "Accepted";
       break;
     case Verdict::PE:
-      status = "Presentation Error";
+      status = "PresentationError";
       break;
     default:
-      status = "System Error";
+      status = "SystemError";
       break;
   }
 
-  fprintf(result_file, "%s\n", status.c_str());
-  fprintf(result_file, "%ld\n", global_context->result->time);
-  fprintf(result_file, "%ld\n", global_context->result->memory);
+  fprintf(result_file, "status         %s\n", status.c_str());
+  fprintf(result_file, "time           %ld\n", global_context->result->time);
+  fprintf(result_file, "memory         %ld\n", global_context->result->memory);
+  fprintf(result_file, "checker_time   %ld\n", global_context->result->checker_time);
+  fprintf(result_file, "checker_memory %ld\n", global_context->result->checker_memory);
 //  fprintf(result_file, "%s\n", PROBLEM::extra_message.c_str());
 
-  FM_LOG_TRACE("Verdict: %s", status.c_str());
-  FM_LOG_TRACE("Time   : %ld ms", global_context->result->time);
-  FM_LOG_TRACE("Memory : %ld KB", global_context->result->memory);
+  FM_LOG_TRACE("Verdict        : %s", status.c_str());
+  FM_LOG_TRACE("Time           : %ld ms", global_context->result->time);
+  FM_LOG_TRACE("Memory         : %ld KB", global_context->result->memory);
+  FM_LOG_TRACE("Checker Time   : %ld ms", global_context->result->checker_time);
+  FM_LOG_TRACE("Checker Memory : %ld KB", global_context->result->checker_memory);
 }
 
 static void print_help_message() {

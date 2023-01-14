@@ -47,22 +47,22 @@ add_test(NAME Help COMMAND $<TARGET_FILE:main> "-h")
 add_test(NAME APLUSB
         COMMAND ${python} ${runner} $<TARGET_FILE:main> $<TARGET_FILE:lcmp> ac.cpp 1 "Accepted")
 add_test(NAME APLUSB_WA
-        COMMAND ${python} ${runner} $<TARGET_FILE:main> $<TARGET_FILE:lcmp> wa.cpp 2 "Wrong Answer")
+        COMMAND ${python} ${runner} $<TARGET_FILE:main> $<TARGET_FILE:lcmp> wa.cpp 2 "WrongAnswer")
 add_test(NAME APLUSB_RE
-        COMMAND ${python} ${runner} $<TARGET_FILE:main> $<TARGET_FILE:lcmp> re.cpp 2 "Runtime Error")
+        COMMAND ${python} ${runner} $<TARGET_FILE:main> $<TARGET_FILE:lcmp> re.cpp 2 "RuntimeError")
 add_test(NAME APLUSB_TLE
-        COMMAND ${python} ${runner} $<TARGET_FILE:main> $<TARGET_FILE:lcmp> tle.cpp 1 "Time Limit Exceeded")
+        COMMAND ${python} ${runner} $<TARGET_FILE:main> $<TARGET_FILE:lcmp> tle.cpp 1 "TimeLimitExceeded")
 add_test(NAME APLUSB_MLE
-        COMMAND ${python} ${runner} $<TARGET_FILE:main> $<TARGET_FILE:lcmp> mle.cpp 1 "Memory Limit Exceeded")
+        COMMAND ${python} ${runner} $<TARGET_FILE:main> $<TARGET_FILE:lcmp> mle.cpp 1 "MemoryLimitExceeded")
 add_test(NAME APLUSB_STACK_ERR
-        COMMAND ${python} ${runner} $<TARGET_FILE:main> $<TARGET_FILE:lcmp> stack.cpp 2 "Memory Limit Exceeded")
+        COMMAND ${python} ${runner} $<TARGET_FILE:main> $<TARGET_FILE:lcmp> stack.cpp 2 "MemoryLimitExceeded")
 add_test(NAME APLUSB_STACK_OK
-        COMMAND ${python} ${runner} $<TARGET_FILE:main> $<TARGET_FILE:lcmp> stack.cpp 3 "Wrong Answer")
+        COMMAND ${python} ${runner} $<TARGET_FILE:main> $<TARGET_FILE:lcmp> stack.cpp 3 "WrongAnswer")
 add_test(NAME FORK_BOMB
-        COMMAND ${python} ${runner} $<TARGET_FILE:main> $<TARGET_FILE:lcmp> fork.cpp 3 "Runtime Error")
+        COMMAND ${python} ${runner} $<TARGET_FILE:main> $<TARGET_FILE:lcmp> fork.cpp 3 "RuntimeError")
 add_test(NAME FORBIDDEN_FS
-        COMMAND ${python} ${runner} $<TARGET_FILE:main> $<TARGET_FILE:lcmp> fs.cpp 3 "Runtime Error")
+        COMMAND ${python} ${runner} $<TARGET_FILE:main> $<TARGET_FILE:lcmp> fs.cpp 3 "RuntimeError")
 add_test(NAME APLUSB_JAVA
         COMMAND ${python} ${runner} $<TARGET_FILE:main> $<TARGET_FILE:lcmp> ac.java 1 "Accepted")
 add_test(NAME APLUSB_JAVA_FS
-        COMMAND ${python} ${runner} $<TARGET_FILE:main> $<TARGET_FILE:lcmp> fs.java 1 "Wrong Answer")
+        COMMAND ${python} ${runner} $<TARGET_FILE:main> $<TARGET_FILE:lcmp> fs.java 1 "WrongAnswer")

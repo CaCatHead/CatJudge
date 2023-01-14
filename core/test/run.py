@@ -52,7 +52,9 @@ def run(executable, checker, source, testcase, expected):
 
     def read_verdict():
         with open(os.path.join(tmp_dir, 'result.txt')) as result:
-            return result.read().split('\n')[0].strip()
+            content = result.read()
+            first_line = content.split('\n')[0]
+            return first_line.split()[1].strip()
 
     verdict = read_verdict()
     shutil.rmtree(tmp_dir)
