@@ -60,7 +60,7 @@ add_test(NAME APLUSB_TLE
 add_test(NAME APLUSB_MLE
         COMMAND ${python} ${runner} $<TARGET_FILE:main> $<TARGET_FILE:lcmp> mle.cpp 1 "MemoryLimitExceeded")
 add_test(NAME APLUSB_STACK_ERR
-        COMMAND ${python} ${runner} $<TARGET_FILE:main> $<TARGET_FILE:lcmp> stack.cpp 2 "MemoryLimitExceeded")
+        COMMAND ${python} ${runner} $<TARGET_FILE:main> $<TARGET_FILE:lcmp> stack.cpp 2 "RuntimeError")
 add_test(NAME APLUSB_STACK_OK
         COMMAND ${python} ${runner} $<TARGET_FILE:main> $<TARGET_FILE:lcmp> stack.cpp 3 "WrongAnswer")
 add_test(NAME FORK_BOMB
