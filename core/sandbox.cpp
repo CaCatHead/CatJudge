@@ -422,7 +422,7 @@ static Result *check(Context *ctx) {
   if (init_mem < 0) {
     init_mem = 0;
   }
-  FM_LOG_DEBUG("Checker init memory: %d", init_mem);
+  FM_LOG_DEBUG("Checker init memory: %d KB", init_mem);
 
   pid_t spj_pid = fork();
   int status = 0;
