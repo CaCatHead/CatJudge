@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.0)
-project(CatJudge VERSION 0.3.1)
+project(CatJudge VERSION 0.3.2)
 
 set(IS_DEBUG CMAKE_BUILD_TYPE STREQUAL "Debug")
 if (${IS_DEBUG})
