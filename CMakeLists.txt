@@ -49,8 +49,10 @@ set(python python)
 set(runner ../core/test/run.py)
 
 add_test(NAME Help COMMAND $<TARGET_FILE:main> "-h")
-add_test(NAME APLUSB
+add_test(NAME APLUSB_AC
         COMMAND ${python} ${runner} $<TARGET_FILE:main> $<TARGET_FILE:lcmp> ac.cpp 1 "Accepted")
+add_test(NAME APLUSB_AC_RETURN
+        COMMAND ${python} ${runner} $<TARGET_FILE:main> $<TARGET_FILE:lcmp> ac_return.cpp 1 "RuntimeError")
 add_test(NAME APLUSB_WA
         COMMAND ${python} ${runner} $<TARGET_FILE:main> $<TARGET_FILE:lcmp> wa.cpp 2 "WrongAnswer")
 add_test(NAME APLUSB_RE

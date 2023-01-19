@@ -314,8 +314,7 @@ static Result *run(Context *ctx) {
 
       // 自行退出
       if (WIFEXITED(status)) {
-        if (ctx->language != Language::JAVA ||
-            WEXITSTATUS(status) == EXIT_SUCCESS) {
+        if (WEXITSTATUS(status) == EXIT_SUCCESS) {
           FM_LOG_TRACE("OK, normal quit. All is good.");
         } else {
           FM_LOG_WARNING("Oh, some error occurred. Abnormal quit.");
