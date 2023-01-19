@@ -249,6 +249,9 @@ static Result *run(Context *ctx) {
     // 子进程: 用户程序
     FM_LOG_DEBUG("Fork child process");
 
+    // 清空环境变量
+    clearenv();
+
     redirect_io(ctx->input_file(), ctx->output_file(), ctx->error_file());
 
     security_control(ctx);
@@ -318,7 +321,7 @@ static Result *run(Context *ctx) {
         if (WEXITSTATUS(status) == EXIT_SUCCESS) {
           FM_LOG_TRACE("OK, normal quit. All is good.");
         } else {
-          FM_LOG_WARNING("Oh, some error occurred. Abnormal quit.");
+          FM_LOG_WARNING("Abnormal quit, return code is %d. ", status);
           result->verdict = Verdict::RE;
         }
         break;
@@ -448,6 +451,9 @@ static Result *check(Context *ctx) {
       FM_LOG_WARNING("Set time limit for spj failed.");
       exit(EXIT::COMPARE_SPJ);
     }
+
+    // 清空环境变量
+    clearenv();
 
     redirect_io(ctx->checker_output_file(), ctx->checker_error_file());
 

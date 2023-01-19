@@ -65,11 +65,15 @@ add_test(NAME APLUSB_STACK_ERR
         COMMAND ${python} ${runner} $<TARGET_FILE:main> $<TARGET_FILE:lcmp> stack.cpp 2 "RuntimeError")
 add_test(NAME APLUSB_STACK_OK
         COMMAND ${python} ${runner} $<TARGET_FILE:main> $<TARGET_FILE:lcmp> stack.cpp 3 "WrongAnswer")
+add_test(NAME APLUSB_JAVA
+        COMMAND ${python} ${runner} $<TARGET_FILE:main> $<TARGET_FILE:lcmp> ac.java 1 "Accepted")
+
+# Security
 add_test(NAME FORK_BOMB
         COMMAND ${python} ${runner} $<TARGET_FILE:main> $<TARGET_FILE:lcmp> fork.cpp 3 "RuntimeError")
 add_test(NAME FORBIDDEN_FS
         COMMAND ${python} ${runner} $<TARGET_FILE:main> $<TARGET_FILE:lcmp> fs.cpp 3 "RuntimeError")
-add_test(NAME APLUSB_JAVA
-        COMMAND ${python} ${runner} $<TARGET_FILE:main> $<TARGET_FILE:lcmp> ac.java 1 "Accepted")
+add_test(NAME READ_ENV
+        COMMAND ${python} ${runner} $<TARGET_FILE:main> $<TARGET_FILE:lcmp> env.cpp 1 "RuntimeError")
 add_test(NAME APLUSB_JAVA_FS
         COMMAND ${python} ${runner} $<TARGET_FILE:main> $<TARGET_FILE:lcmp> fs.java 1 "WrongAnswer")
