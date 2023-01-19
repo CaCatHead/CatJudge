@@ -314,6 +314,7 @@ static Result *run(Context *ctx) {
 
       // 自行退出
       if (WIFEXITED(status)) {
+        // Return code must 0, otherwise RE
         if (WEXITSTATUS(status) == EXIT_SUCCESS) {
           FM_LOG_TRACE("OK, normal quit. All is good.");
         } else {
