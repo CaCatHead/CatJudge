@@ -495,10 +495,10 @@ static Result *check(Context *ctx) {
       }
     } else if (WIFSIGNALED(status) && WTERMSIG(status) == SIGALRM) {
       ctx->result->verdict = Verdict::SE;
-      FM_LOG_WARNING("Well, the special judge program consume too much time.");
+      FM_LOG_WARNING("The checker consumes too much time (Return code: %d)", status);
     } else {
       ctx->result->verdict = Verdict::SE;
-      FM_LOG_WARNING("Actually, I do not know why the special judge program dead.");
+      FM_LOG_WARNING("I do not know why the checker dead (Return code: %d)", status);
     }
   }
 
@@ -506,7 +506,8 @@ static Result *check(Context *ctx) {
   ctx->result->checker_time += (rused.ru_utime.tv_sec * 1000 + rused.ru_utime.tv_usec / 1000);
   ctx->result->checker_time += (rused.ru_stime.tv_sec * 1000 + rused.ru_stime.tv_usec / 1000);
 
-  ctx->result->checker_message = read_text(ctx->checker_error_file());
+  ctx->result->checker_stdout = read_text(ctx->checker_output_file());
+  ctx->result->checker_stderr = read_text(ctx->checker_error_file());
 
   return ctx->result;
 }

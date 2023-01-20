@@ -28,7 +28,7 @@ struct Result {
   /**
    * 额外信息
    */
-  std::string checker_message;
+  std::string checker_stdout, checker_stderr;
 
   /**
    * 最终结果
