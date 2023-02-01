@@ -23,6 +23,10 @@ struct Result {
    */
   long int time = 0;
 
+  long int time_user = 0;
+
+  long int time_sys = 0;
+
   long int checker_time = 0;
 
   /**

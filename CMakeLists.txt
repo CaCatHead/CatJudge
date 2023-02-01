@@ -55,6 +55,8 @@ add_test(NAME APLUSB_AC_RETURN
         COMMAND ${python} ${runner} $<TARGET_FILE:main> $<TARGET_FILE:lcmp> ac_return.cpp 1 "RuntimeError")
 add_test(NAME APLUSB_WA
         COMMAND ${python} ${runner} $<TARGET_FILE:main> $<TARGET_FILE:lcmp> wa.cpp 2 "WrongAnswer")
+add_test(NAME APLUSB_IO
+        COMMAND ${python} ${runner} $<TARGET_FILE:main> $<TARGET_FILE:lcmp> io.cpp 2 "TimeLimitExceeded")
 add_test(NAME APLUSB_RE
         COMMAND ${python} ${runner} $<TARGET_FILE:main> $<TARGET_FILE:lcmp> re.cpp 2 "RuntimeError")
 add_test(NAME APLUSB_TLE

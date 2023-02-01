@@ -403,9 +403,9 @@ static Result *run(Context *ctx) {
 
   FM_LOG_TRACE("Running user submission is OK");
 
-  result->time = 0;
-  result->time += (rused.ru_utime.tv_sec * 1000 + rused.ru_utime.tv_usec / 1000);
-  result->time += (rused.ru_stime.tv_sec * 1000 + rused.ru_stime.tv_usec / 1000);
+  result->time_user = (rused.ru_utime.tv_sec * 1000 + rused.ru_utime.tv_usec / 1000);
+  result->time_sys = (rused.ru_stime.tv_sec * 1000 + rused.ru_stime.tv_usec / 1000);
+  result->time = result->time_user + result->time_sys;
 
   if (result->verdict == Verdict::SE) {
     if (result->time > ctx->time_limit) {

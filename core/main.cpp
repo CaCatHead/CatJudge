@@ -54,7 +54,7 @@ static void output_result() {
   }
 
   fprintf(result_file, "status         %s\n", status.c_str());
-  fprintf(result_file, "time           %ld\n", global_context->result->time);
+  fprintf(result_file, "time           %ld\n", global_context->result->time_user);
   fprintf(result_file, "memory         %ld\n", global_context->result->memory);
   fprintf(result_file, "checker_time   %ld\n", global_context->result->checker_time);
   fprintf(result_file, "checker_memory %ld\n", global_context->result->checker_memory);
@@ -63,6 +63,8 @@ static void output_result() {
 
   FM_LOG_TRACE("Verdict        : %s", status.c_str());
   FM_LOG_TRACE("Time           : %ld ms", global_context->result->time);
+  FM_LOG_TRACE("Time User      : %ld ms", global_context->result->time_user);
+  FM_LOG_TRACE("Time Sys       : %ld ms", global_context->result->time_sys);
   FM_LOG_TRACE("Memory         : %ld KB", global_context->result->memory);
   FM_LOG_TRACE("Checker Time   : %ld ms", global_context->result->checker_time);
   FM_LOG_TRACE("Checker Memory : %ld KB", global_context->result->checker_memory);
