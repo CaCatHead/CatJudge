@@ -63,10 +63,10 @@ add_test(NAME APLUSB_TLE
         COMMAND ${python} ${runner} $<TARGET_FILE:main> $<TARGET_FILE:lcmp> tle.cpp 1 "TimeLimitExceeded")
 add_test(NAME APLUSB_MLE
         COMMAND ${python} ${runner} $<TARGET_FILE:main> $<TARGET_FILE:lcmp> mle.cpp 1 "MemoryLimitExceeded")
-add_test(NAME APLUSB_STACK_ERR
-        COMMAND ${python} ${runner} $<TARGET_FILE:main> $<TARGET_FILE:lcmp> stack.cpp 2 "RuntimeError")
-add_test(NAME APLUSB_STACK_OK
-        COMMAND ${python} ${runner} $<TARGET_FILE:main> $<TARGET_FILE:lcmp> stack.cpp 3 "WrongAnswer")
+add_test(NAME APLUSB_BIG_STACK
+        COMMAND ${python} ${runner} $<TARGET_FILE:main> $<TARGET_FILE:lcmp> big_stack.cpp 2 "RuntimeError")
+add_test(NAME APLUSB_SMALL_STACK
+        COMMAND ${python} ${runner} $<TARGET_FILE:main> $<TARGET_FILE:lcmp> small_stack.cpp 2 "Accepted")
 add_test(NAME APLUSB_JAVA
         COMMAND ${python} ${runner} $<TARGET_FILE:main> $<TARGET_FILE:lcmp> ac.java 1 "Accepted")
 
