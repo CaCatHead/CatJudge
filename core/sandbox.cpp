@@ -107,8 +107,10 @@ static std::string read_text(std::string path) {
 static void set_limit(Context *ctx) {
   rlimit lim {};
 
-  lim.rlim_max = (ctx->time_limit - ctx->result->time + 999) / 1000 + 1;//硬限制
-  lim.rlim_cur = lim.rlim_max; //软限制
+  // 两倍时限
+  lim.rlim_max = 2 * int((ctx->time_limit + 999) / 1000);
+  lim.rlim_cur = lim.rlim_max;
+  FM_LOG_DEBUG("cpu time limit is %d s", lim.rlim_max);
   if (setrlimit(RLIMIT_CPU, &lim) < 0) {
     FM_LOG_WARNING("error setrlimit for RLIMIT_CPU");
     exit(EXIT::SET_LIMIT);
@@ -258,6 +260,7 @@ static Result *run(Context *ctx) {
 
     // 定时器设置两倍时间限制
     int real_time_limit = 2 * ctx->time_limit;
+    FM_LOG_DEBUG("set child alarm %d ms", real_time_limit);
     if (EXIT_SUCCESS != malarm(ITIMER_REAL, real_time_limit)) {
       exit(EXIT::PRE_JUDGE);
     }
@@ -513,13 +516,12 @@ static Result *check(Context *ctx) {
 }
 
 Result *judge(Context *ctx) {
-  // 定时器设置两倍时间限制，加上评测时限
-  if (EXIT_SUCCESS != malarm(ITIMER_REAL, 2 * ctx->time_limit + CONF::JUDGE_TIME_LIMIT)) {
-    FM_LOG_WARNING("Set the alarm for this judge program failed, %d: %s", errno, strerror(errno));
-    exit(EXIT::VERY_FIRST);
-  }
-
-  signal(SIGALRM, timeout);
+//   定时器设置两倍时间限制，加上评测时限
+//  if (EXIT_SUCCESS != malarm(ITIMER_REAL, 4 * ctx->time_limit + CONF::JUDGE_TIME_LIMIT)) {
+//    FM_LOG_WARNING("Set the alarm for this judge program failed, %d: %s", errno, strerror(errno));
+//    exit(EXIT::VERY_FIRST);
+//  }
+//  signal(SIGALRM, timeout);
 
   run(ctx);
 
