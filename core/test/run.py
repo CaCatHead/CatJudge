@@ -46,7 +46,7 @@ def run(executable, checker, source, testcase, expected):
     commands = [executable, "-d", tmp_dir, "-l", source.split('.')[-1], "-s", checker]
     if is_c_cpp:
         # Restrict c/cpp memory usage
-        commands += ["-m", str(4 * 1024)]
+        commands += ["-m", str(8 * 1024)]
         
     code = subprocess.call(commands, cwd=os.path.dirname(executable))
 

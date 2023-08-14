@@ -287,8 +287,6 @@ static Result *run(Context *ctx) {
     // 走到这了说明出错了
     exit(EXIT::PRE_JUDGE_EXECLP);
   } else {
-    long int init_mem = -1;
-
     // 父进程
     int status = 0;  // 子进程状态
     int syscall_id = 0; // 系统调用号
@@ -303,14 +301,8 @@ static Result *run(Context *ctx) {
         exit(EXIT::JUDGE);
       }
 
-      if (init_mem < 0) {
-        // 记录启动时使用的内存
-        init_mem = rused.ru_maxrss;
-        FM_LOG_TRACE("Init memory: %d KB", init_mem);
-      }
-
       // MLE, using ru_maxrss (since Linux 2.6.32)
-      result->memory = std::max((long int) result->memory, rused.ru_maxrss - init_mem);
+      result->memory = std::max((long int) result->memory, rused.ru_maxrss);
       if (result->verdict == Verdict::SE && result->memory > ctx->memory_limit) {
         result->verdict = Verdict::MLE;
         FM_LOG_TRACE("Memory Limit Exceeded (%d KB)", result->memory);
