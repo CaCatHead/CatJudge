@@ -420,6 +420,11 @@ static Result *run(Context *ctx) {
     } else if (result->memory > ctx->memory_limit) {
       result->verdict = Verdict::MLE;
     }
+  } else if (result->verdict == Verdict::ILE) {
+    // Fix TLE verdict when user time > time limit
+    if (result->time > ctx->time_limit) {
+      result->verdict = Verdict::TLE;
+    }
   }
 
   return result;
