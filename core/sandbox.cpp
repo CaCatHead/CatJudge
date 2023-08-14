@@ -305,8 +305,8 @@ static Result *run(Context *ctx) {
 
       if (init_mem < 0) {
         // 记录启动时使用的内存
-        FM_LOG_DEBUG("Init memory: %d KB", rused.ru_maxrss);
         init_mem = rused.ru_maxrss;
+        FM_LOG_TRACE("Init memory: %d KB", init_mem);
       }
 
       // MLE, using ru_maxrss (since Linux 2.6.32)
