@@ -64,7 +64,7 @@ add_test(NAME APLUSB_TLE
 add_test(NAME APLUSB_MLE
         COMMAND ${python} ${runner} $<TARGET_FILE:main> $<TARGET_FILE:lcmp> mle.cpp 1 "MemoryLimitExceeded")
 add_test(NAME APLUSB_BIG_STACK
-        COMMAND ${python} ${runner} $<TARGET_FILE:main> $<TARGET_FILE:lcmp> big_stack.cpp 2 "RuntimeError")
+        COMMAND ${python} ${runner} $<TARGET_FILE:main> $<TARGET_FILE:lcmp> big_stack.cpp 2 "MemoryLimitExceeded")
 add_test(NAME APLUSB_SMALL_STACK
         COMMAND ${python} ${runner} $<TARGET_FILE:main> $<TARGET_FILE:lcmp> small_stack.cpp 2 "Accepted")
 add_test(NAME APLUSB_JAVA

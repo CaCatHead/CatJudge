@@ -287,13 +287,7 @@ static Result *run(Context *ctx) {
     // 走到这了说明出错了
     exit(EXIT::PRE_JUDGE_EXECLP);
   } else {
-    // 记录首次启动时使用的内存？
-    getrusage(RUSAGE_SELF, &rused);
-    FM_LOG_DEBUG("Init memory: %d KB", rused.ru_maxrss);
-    long int init_mem = rused.ru_maxrss;
-    if (init_mem < 0) {
-      init_mem = 0;
-    }
+    long int init_mem = -1;
 
     // 父进程
     int status = 0;  // 子进程状态
@@ -307,6 +301,12 @@ static Result *run(Context *ctx) {
       if (wait4(executive, &status, 0, &rused) < 0) {
         FM_LOG_WARNING("wait4 failed.");
         exit(EXIT::JUDGE);
+      }
+
+      if (init_mem < 0) {
+        // 记录启动时使用的内存
+        FM_LOG_DEBUG("Init memory: %d KB", rused.ru_maxrss);
+        init_mem = rused.ru_maxrss;
       }
 
       // MLE, using ru_maxrss (since Linux 2.6.32)
@@ -433,11 +433,6 @@ static Result *run(Context *ctx) {
 static Result *check(Context *ctx) {
   struct rusage rused {};
   getrusage(RUSAGE_SELF, &rused);
-  long int init_mem = rused.ru_maxrss;
-  if (init_mem < 0) {
-    init_mem = 0;
-  }
-  FM_LOG_DEBUG("Checker init memory: %d KB", init_mem);
 
   pid_t spj_pid = fork();
   int status = 0;
@@ -490,7 +485,7 @@ static Result *check(Context *ctx) {
       exit(EXIT::COMPARE_SPJ);
     }
 
-    ctx->result->checker_memory = std::max((long int) ctx->result->checker_memory, rused.ru_maxrss - init_mem);
+    ctx->result->checker_memory = std::max((long int) ctx->result->checker_memory, rused.ru_maxrss);
 
     FM_LOG_DEBUG("Checker return code: %d", status);
 
