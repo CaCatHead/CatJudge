@@ -30,6 +30,9 @@ static void output_result() {
     case Verdict::TLE:
       status = "TimeLimitExceeded";
       break;
+    case Verdict::ILE:
+      status = "IdlenessLimitExceeded";
+      break;
     case Verdict::MLE:
       status = "MemoryLimitExceeded";
       break;
@@ -54,7 +57,7 @@ static void output_result() {
   }
 
   fprintf(result_file, "status         %s\n", status.c_str());
-  fprintf(result_file, "time           %ld\n", global_context->result->time_user);
+  fprintf(result_file, "time           %ld\n", global_context->result->time);
   fprintf(result_file, "memory         %ld\n", global_context->result->memory);
   fprintf(result_file, "checker_time   %ld\n", global_context->result->checker_time);
   fprintf(result_file, "checker_memory %ld\n", global_context->result->checker_memory);

@@ -343,10 +343,14 @@ static Result *run(Context *ctx) {
         }
 
         switch (sig) {
-          // TLE
+          // ILE
           case SIGALRM:
-          case SIGXCPU:
           case SIGVTALRM:
+            FM_LOG_TRACE("Idleness Limit Exceeded");
+            result->verdict = Verdict::ILE;
+            break;
+          // TLE
+          case SIGXCPU:
           case SIGKILL:
             FM_LOG_TRACE("Time Limit Exceeded");
             result->verdict = Verdict::TLE;
@@ -408,7 +412,7 @@ static Result *run(Context *ctx) {
 
   result->time_user = (rused.ru_utime.tv_sec * 1000 + rused.ru_utime.tv_usec / 1000);
   result->time_sys = (rused.ru_stime.tv_sec * 1000 + rused.ru_stime.tv_usec / 1000);
-  result->time = result->time_user + result->time_sys;
+  result->time = result->time_user;
 
   if (result->verdict == Verdict::SE) {
     if (result->time > ctx->time_limit) {
